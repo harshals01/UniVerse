@@ -26,10 +26,10 @@ import connectDB from './config/db.js';
 import { notFound, errorHandler } from './middleware/errorMiddleware.js';
 
 // ── Route imports ────────────────────────────────────────────────────────────
-import authRoutes        from './routes/authRoutes.js';        // ✅ live
-import lostFoundRoutes   from './routes/lostFoundRoutes.js';   // ✅ live
+import authRoutes from './routes/authRoutes.js';        // ✅ live
+import lostFoundRoutes from './routes/lostFoundRoutes.js';   // ✅ live
 import marketplaceRoutes from './routes/marketplaceRoutes.js'; // ✅ live
-import notesRoutes       from './routes/notesRoutes.js';       // ✅ live
+import notesRoutes from './routes/notesRoutes.js';       // ✅ live
 
 // ── ESM __dirname shim ────────────────────────────────────────────────────────
 const __filename = fileURLToPath(import.meta.url);
@@ -73,10 +73,10 @@ app.get('/api/health', (req, res) => {
 });
 
 // ── 5. Feature Routers ────────────────────────────────────────────────────────
-app.use('/api/auth',        authRoutes);              // ✅ Register / Login / Me
-app.use('/api/lostfound',   lostFoundRoutes);         // ✅ Lost & Found CRUD
+app.use('/api/auth', authRoutes);              // ✅ Register / Login / Me
+app.use('/api/lostfound', lostFoundRoutes);         // ✅ Lost & Found CRUD
 app.use('/api/marketplace', marketplaceRoutes);       // ✅ Marketplace CRUD
-app.use('/api/notes',       notesRoutes);             // ✅ AI Notes CRUD
+app.use('/api/notes', notesRoutes);             // ✅ AI Notes CRUD
 
 // ── 6. Static File Serving ────────────────────────────────────────────────────
 // Uploaded images / PDFs accessible at: /uploads/<filename>
