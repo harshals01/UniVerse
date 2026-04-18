@@ -1,6 +1,5 @@
 # UniVerse
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Node.js](https://img.shields.io/badge/Node.js-18.x-green.svg)](https://nodejs.org/)
 [![React](https://img.shields.io/badge/React-18.x-blue.svg)](https://reactjs.org/)
 
@@ -115,8 +114,3 @@ Please review our [Contribution Guidelines](docs/CONTRIBUTING.md) to understand 
 ## 📜 License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## 👨‍💻 Maintainers
-
-UniVerse is maintained by the **UniVerse Team**.
-For direct inquiries or security issues, please contact [maintainers@universe-platform.app](mailto:maintainers@universe-platform.app).
