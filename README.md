@@ -4,7 +4,7 @@
 [![Node.js](https://img.shields.io/badge/Node.js-18.x-green.svg)](https://nodejs.org/)
 [![React](https://img.shields.io/badge/React-18.x-blue.svg)](https://reactjs.org/)
 
-**UniVerse** (formerly CampusSync) is a modular, full-stack platform designed to connect students and streamline campus life. By consolidating essential tools into one cohesive application, UniVerse aims to bring a safer, smarter, and more engaging digital experience to university environments.
+**UniVerse** is a modular, full-stack platform designed to connect students and streamline campus life. By consolidating essential tools into one cohesive application, UniVerse aims to bring a safer, smarter, and more engaging digital experience to university environments.
 
 ## 🌟 Why UniVerse is Useful
 
