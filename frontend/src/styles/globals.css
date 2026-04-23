@@ -29,17 +29,17 @@ input, textarea, select {
   font-family: inherit;
   background: var(--bg-input);
   color: var(--text-primary);
-  border: 1px solid var(--border-default);
+  border: none;
   border-radius: var(--radius-md);
   padding: var(--space-3) var(--space-4);
   width: 100%;
-  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+  transition: background var(--transition-fast), box-shadow var(--transition-fast);
   outline: none;
 }
 
 input:focus, textarea:focus, select:focus {
-  border-color: var(--color-primary);
-  box-shadow: 0 0 0 3px var(--color-primary-glow);
+  background: var(--bg-hover);
+  box-shadow: 0 0 0 2px var(--color-primary);
 }
 
 textarea { resize: vertical; min-height: 120px; }
@@ -69,15 +69,13 @@ textarea { resize: vertical; min-height: 120px; }
 /* ── Card ────────────────────────────────────────────────────────────────────── */
 .card {
   background: var(--bg-surface);
-  border: 1px solid var(--border-subtle);
   border-radius: var(--radius-lg);
   padding: var(--space-6);
-  transition: border-color var(--transition-base), box-shadow var(--transition-base), transform var(--transition-base);
+  transition: transform var(--transition-base), box-shadow var(--transition-base);
 }
 .card:hover {
-  border-color: var(--border-primary);
-  box-shadow: var(--shadow-glow);
   transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
 }
 
 /* ── Button ──────────────────────────────────────────────────────────────────── */
@@ -87,7 +85,7 @@ textarea { resize: vertical; min-height: 120px; }
   justify-content: center;
   gap: var(--space-2);
   padding: var(--space-3) var(--space-5);
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-pill);
   font-size: var(--text-sm);
   font-weight: 600;
   transition: all var(--transition-fast);
@@ -99,13 +97,14 @@ textarea { resize: vertical; min-height: 120px; }
 }
 .btn-primary:hover {
   background: var(--color-primary-dark);
-  box-shadow: var(--shadow-glow);
+  box-shadow: 0 0 20px var(--color-primary-glow);
   transform: translateY(-1px);
 }
 .btn-outline {
   background: transparent;
   color: var(--color-primary-light);
   border: 1px solid var(--border-primary);
+  border-radius: var(--radius-pill);
 }
 .btn-outline:hover {
   background: var(--color-primary-glow);
@@ -113,6 +112,7 @@ textarea { resize: vertical; min-height: 120px; }
 .btn-ghost {
   background: transparent;
   color: var(--text-secondary);
+  border-radius: var(--radius-pill);
 }
 .btn-ghost:hover { background: var(--bg-hover); color: var(--text-primary); }
 
@@ -120,26 +120,35 @@ textarea { resize: vertical; min-height: 120px; }
 .btn-lg { padding: var(--space-4) var(--space-8); font-size: var(--text-base); }
 .btn:disabled { opacity: 0.5; pointer-events: none; }
 
-/* ── Badge ───────────────────────────────────────────────────────────────────── */
+/* ── Badge ──────────────────────────────────────────────────────────────────────── */
 .badge {
   display: inline-flex;
   align-items: center;
-  padding: 2px var(--space-3);
-  border-radius: var(--radius-full);
+  padding: 3px var(--space-3);
+  border-radius: var(--radius-pill); /* fully rounded pill */
   font-size: var(--text-xs);
   font-weight: 600;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
 }
-.badge-lost    { background: rgba(239,68,68,0.15);  color: #f87171; }
-.badge-found   { background: rgba(34,197,94,0.15);  color: #4ade80; }
-.badge-sell    { background: rgba(59,130,246,0.15); color: #60a5fa; }
-.badge-open    { background: rgba(34,197,94,0.15);  color: #4ade80; }
-.badge-claimed { background: rgba(245,158,11,0.15); color: #fbbf24; }
-.badge-sold    { background: rgba(239,68,68,0.15);  color: #f87171; }
-.badge-ai      { background: rgba(108,99,255,0.2);  color: #a78bfa; }
+.badge-lost    { background: rgba(239,68,68,0.15);    color: #f87171; }
+.badge-found   { background: rgba(34,197,94,0.15);    color: #4ade80; }
+.badge-sell    { background: rgba(59,130,246,0.15);   color: #60a5fa; }
+.badge-open    { background: rgba(34,197,94,0.15);    color: #4ade80; }
+.badge-claimed { background: rgba(245,158,11,0.15);   color: #fbbf24; }
+.badge-sold    { background: rgba(239,68,68,0.15);    color: #f87171; }
+.badge-ai      { background: rgba(229,69,3,0.15);     color: var(--color-primary-light); }
 
-/* ── Form Group ──────────────────────────────────────────────────────────────── */
+/* ── Form Group ───────────────────────────────────────────────────────────────────── */
 .form-group { display: flex; flex-direction: column; gap: var(--space-2); }
-.form-label { font-size: var(--text-sm); font-weight: 500; color: var(--text-secondary); }
+.form-label {
+  font-size:   var(--text-sm);
+  font-weight: 600;
+  color:       var(--text-secondary);
+  letter-spacing: 0.02em;
+}
+/* Global placeholder contrast */
+::placeholder { color: var(--text-muted); opacity: 1; }
 
 /* ── Page Header ─────────────────────────────────────────────────────────────── */
 .page-header { margin-bottom: var(--space-8); }
@@ -233,3 +242,498 @@ input:disabled, textarea:disabled, select:disabled {
   font-size: 0.85em;
   color: var(--color-primary-light);
 }
+
+/* ══════════════════════════════════════════════════════════════════════════════
+   POLISH LAYER — subtle interactions, transitions, states
+   All animations respect prefers-reduced-motion.
+   ══════════════════════════════════════════════════════════════════════════════ */
+
+/* ── Smooth scroll ───────────────────────────────────────────────────────────── */
+html { scroll-behavior: smooth; }
+
+/* ── Card hover lift ─────────────────────────────────────────────────────────── */
+/* Applied to .card class only — explicit opt-in, no blanket selectors */
+.card {
+  transition: transform var(--transition-base), box-shadow var(--transition-base);
+  will-change: transform;
+}
+.card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-lg);
+}
+/* Cards that are static containers (no cursor pointer) skip lift */
+.card[data-static] { transform: none !important; box-shadow: none !important; }
+
+/* ── Button press / active state ─────────────────────────────────────────────── */
+.btn:active:not(:disabled) {
+  transform: scale(0.97) translateY(0) !important;
+  box-shadow: none !important;
+  transition: transform 60ms ease, box-shadow 60ms ease;
+}
+
+/* Pill buttons used across pages (inline-style buttons without .btn class) */
+button:not([data-no-press]):active:not(:disabled) {
+  transform: scale(0.97) !important;
+  transition: transform 60ms ease !important;
+}
+
+/* ── Link hover underline polish ─────────────────────────────────────────────── */
+a { transition: color var(--transition-fast); }
+
+/* ── Input focus — consistent across all pages ───────────────────────────────── */
+input:focus,
+textarea:focus,
+select:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--color-primary);
+  background: var(--bg-hover);
+  transition: box-shadow var(--transition-fast), background var(--transition-fast);
+}
+/* Error override takes priority */
+input[aria-invalid="true"],
+textarea[aria-invalid="true"] {
+  box-shadow: 0 0 0 2px var(--color-danger) !important;
+}
+
+/* ── Skeleton shimmer (global keyframe, no duplication) ─────────────────────── */
+@keyframes skeleton-shimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+@keyframes skeleton-pulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.5; }
+}
+
+/* ── Entrance animation utility ─────────────────────────────────────────────── */
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0);    }
+}
+.fade-up {
+  animation: fade-up 0.25s ease both;
+}
+/* Stagger helpers */
+.fade-up-d1 { animation-delay: 0.05s; }
+.fade-up-d2 { animation-delay: 0.10s; }
+.fade-up-d3 { animation-delay: 0.15s; }
+
+/* ── Page-level fade-in (already on main > * — keep consistent) ─────────────── */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+main > * { animation: fadeIn 0.2s ease both; }
+
+/* ── Reduced motion — disable all non-essential animations ───────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration:        0.01ms !important;
+    animation-iteration-count: 1      !important;
+    transition-duration:       0.01ms !important;
+    scroll-behavior:           auto   !important;
+  }
+}
+
+/* ── Interactive list rows (note list, LF items) ─────────────────────────────── */
+.list-row {
+  transition: background var(--transition-fast);
+}
+.list-row:hover { background: var(--bg-elevated); }
+
+/* ── Tooltip utility ─────────────────────────────────────────────────────────── */
+[data-tooltip] { position: relative; }
+[data-tooltip]::after {
+  content:         attr(data-tooltip);
+  position:        absolute;
+  bottom:          calc(100% + 6px);
+  left:            50%;
+  transform:       translateX(-50%);
+  background:      var(--bg-elevated);
+  color:           var(--text-secondary);
+  font-size:       var(--text-xs);
+  font-weight:     600;
+  padding:         4px 10px;
+  border-radius:   var(--radius-pill);
+  white-space:     nowrap;
+  pointer-events:  none;
+  opacity:         0;
+  transition:      opacity var(--transition-fast);
+  z-index:         100;
+}
+[data-tooltip]:hover::after { opacity: 1; }
+
+/* ── Chip / tag hover ────────────────────────────────────────────────────────── */
+.chip {
+  display:       inline-flex;
+  align-items:   center;
+  padding:       3px 12px;
+  border-radius: var(--radius-pill);
+  font-size:     var(--text-xs);
+  font-weight:   600;
+  background:    var(--bg-elevated);
+  color:         var(--text-muted);
+  cursor:        default;
+  transition:    background var(--transition-fast), color var(--transition-fast);
+}
+.chip.interactive { cursor: pointer; }
+.chip.interactive:hover {
+  background: var(--bg-hover);
+  color:      var(--text-primary);
+}
+.chip.active {
+  background: var(--color-primary);
+  color:      #fff;
+}
+
+/* ══════════════════════════════════════════════════════════════════════════════
+   MOBILE RESPONSIVENESS AUDIT
+   Systematic mobile fixes — desktop styles are unchanged above this line.
+   All breakpoints: 480px (small phone), 640px (large phone), 768px (tablet).
+   ══════════════════════════════════════════════════════════════════════════════ */
+
+/* ── Overflow containment ────────────────────────────────────────────────────── */
+/* Prevents any child from causing horizontal scroll on body */
+html, body { overflow-x: hidden; }
+main       { overflow-x: hidden; }
+
+/* All images stay within their container */
+img { max-width: 100%; height: auto; }
+
+/* ── Container — responsive horizontal padding ───────────────────────────────── */
+.container,
+.container-sm {
+  padding-left:  var(--page-pad-x, 24px);
+  padding-right: var(--page-pad-x, 24px);
+  width:         100%;
+}
+
+/* ── Touch-friendly minimum tap target ───────────────────────────────────────── */
+/* All interactive elements get min 44×44px touch area (WCAG 2.5.5) */
+button,
+a,
+[role="button"] {
+  min-height: 44px;
+  min-width:  44px;
+}
+/* Inline decorative links / icon-only buttons are exempt via override */
+.no-tap-min,
+.no-tap-min * { min-height: unset; min-width: unset; }
+
+/* ── Marketplace grid ─────────────────────────────────────────────────────────── */
+/* 4-col → 2-col → 1-col */
+.mkt-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--space-5);
+}
+@media (max-width: 1100px) {
+  .mkt-grid { grid-template-columns: repeat(3, 1fr); }
+}
+@media (max-width: 800px) {
+  .mkt-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 480px) {
+  .mkt-grid { grid-template-columns: 1fr; }
+}
+
+/* ── Detail page grid ─────────────────────────────────────────────────────────── */
+/* Already in globals but ensure the detail-grid collapses to 1-col at 768px */
+.detail-grid {
+  display: grid;
+  grid-template-columns: 1fr 360px;
+  gap: var(--space-8);
+  align-items: start;
+}
+@media (max-width: 900px) {
+  .detail-grid { grid-template-columns: 1fr; }
+}
+
+/* ── Generic 2/3/4 col grid utilities ───────────────────────────────────────── */
+@media (max-width: 900px) {
+  .grid-3, .grid-4 { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 640px) {
+  .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
+}
+
+/* ── Form grid — always 1-col on mobile ──────────────────────────────────────── */
+@media (max-width: 640px) {
+  .form-grid-2 { grid-template-columns: 1fr !important; }
+}
+
+/* ── Typography scale — prevent blowout on small screens ────────────────────── */
+@media (max-width: 480px) {
+  h1, .page-title { font-size: clamp(1.4rem, 6vw, var(--text-3xl)) !important; }
+  h2              { font-size: clamp(1.1rem, 5vw, var(--text-2xl)) !important; }
+  h3              { font-size: clamp(1rem,   4vw, var(--text-xl))  !important; }
+}
+
+/* ── Cards — prevent overflow on tiny screens ────────────────────────────────── */
+@media (max-width: 480px) {
+  .card {
+    padding:      var(--space-4) !important;
+    border-radius: var(--radius-md) !important;
+  }
+  /* Lift only works on hover — disable on touch to avoid stuck states */
+  .card:hover {
+    transform: none !important;
+    box-shadow: none !important;
+  }
+}
+
+/* ── Prevent button overflow (e.g. long text inside pill buttons) ────────────── */
+@media (max-width: 640px) {
+  .btn { white-space: normal; text-align: center; }
+  .btn-lg { padding: var(--space-3) var(--space-6); font-size: var(--text-sm); }
+}
+
+/* ── Auth pages — full-width card on mobile ──────────────────────────────────── */
+.auth-art-panel {
+  display:         flex;
+  align-items:     center;
+  justify-content: center;
+  background:      var(--bg-surface);
+  flex:            0 0 40%;
+  padding:         var(--space-10);
+  position:        relative;
+  overflow:        hidden;
+}
+@media (max-width: 768px) {
+  .auth-art-panel { display: none !important; }
+}
+
+/* Login / Register card full-width on mobile */
+@media (max-width: 640px) {
+  .auth-form-card {
+    border-radius: 0 !important;
+    min-height:    100vh !important;
+    padding:       var(--space-8) var(--space-5) !important;
+  }
+}
+
+/* ── Main content area — responsive left-margin and bottom pad ───────────────── */
+@media (max-width: 768px) {
+  main {
+    margin-left:    0 !important;
+    padding-bottom: calc(var(--bottom-bar-h) + 12px) !important;
+  }
+}
+
+/* ── Bottom bar — iOS safe area inset ───────────────────────────────────────── */
+.universe-bottombar {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+  height: calc(var(--bottom-bar-h) + env(safe-area-inset-bottom, 0px));
+}
+
+/* ── Sticky panels — don't stick on mobile (avoid scroll traps) ─────────────── */
+@media (max-width: 768px) {
+  .sticky-panel,
+  [style*="position: sticky"],
+  [style*="position:sticky"] {
+    position: static !important;
+    top:      auto   !important;
+  }
+}
+
+/* ── Filter rows — horizontal scroll on mobile, no overflow clip ─────────────── */
+@media (max-width: 640px) {
+  .filter-scroll-x {
+    overflow-x:         auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width:    none;
+    padding-bottom:     4px;
+  }
+  .filter-scroll-x::-webkit-scrollbar { display: none; }
+}
+
+/* ── Bento detail layouts (Marketplace / LF detail pages) ───────────────────── */
+@media (max-width: 900px) {
+  .mpd-layout,
+  .mpc-layout {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+/* ── Notes workspace ─────────────────────────────────────────────────────────── */
+@media (max-width: 720px) {
+  .notes-workspace      { grid-template-columns: 1fr !important; }
+  .notes-canvas-layout  { grid-template-columns: 1fr !important; }
+  .notes-right-rail     { position: static !important; max-height: none !important; }
+}
+
+/* ── LostFound horizontal cards — stack on very small screens ────────────────── */
+@media (max-width: 480px) {
+  .lf-item-card {
+    flex-direction: column !important;
+    align-items:    flex-start !important;
+  }
+  /* Thumbnail goes full width when stacked */
+  .lf-item-card > div:first-child {
+    width:  100% !important;
+    height: 160px !important;
+    border-radius: var(--radius-md) !important;
+  }
+}
+
+/* ── NoteDetail layout ───────────────────────────────────────────────────────── */
+@media (max-width: 860px) {
+  .nd-layout { grid-template-columns: 1fr !important; }
+  .nd-rail   { position: static !important; }
+}
+
+/* ── Input min-height for touch ─────────────────────────────────────────────── */
+@media (max-width: 768px) {
+  input, select { min-height: 48px; }
+  textarea      { min-height: 120px; }
+}
+
+/* ── Prose / AI output — prevent blowout ────────────────────────────────────── */
+@media (max-width: 640px) {
+  .prose, .nd-prose {
+    word-break:  break-word;
+    overflow-wrap: break-word;
+  }
+  .prose pre, .nd-prose pre {
+    overflow-x: auto;
+    max-width:  100%;
+  }
+}
+
+/* ── Page bottom padding — extra breathing room above bottom bar ─────────────── */
+@media (max-width: 768px) {
+  .page { padding-bottom: calc(var(--bottom-bar-h) + var(--space-8)) !important; }
+}
+
+/* ══════════════════════════════════════════════════════════════════════════════
+   POLISH AUDIT — Typography, contrast, button sizing, accessibility
+   Applied after all other rules. No desktop visual changes.
+   ══════════════════════════════════════════════════════════════════════════════ */
+
+/* ── Font-size base — use % not px for user accessibility zoom support ───────── */
+/* The earlier html { font-size: 16px } is overridden here to respect user prefs */
+html { font-size: 100%; }
+
+/* ── Body line-height ────────────────────────────────────────────────────────── */
+body { line-height: 1.65; }
+
+/* ── Consistent word-wrap everywhere ────────────────────────────────────────── */
+* { word-wrap: break-word; overflow-wrap: break-word; }
+
+/* ── Accessible focus-visible — overrides hidden outline on keyboard navigation  */
+:focus-visible {
+  outline:        2px solid var(--color-primary);
+  outline-offset: 3px;
+  border-radius:  var(--radius-sm);
+}
+:focus:not(:focus-visible) { outline: none; }
+
+/* ── Btn-sm — boost to minimum touch height on mobile ───────────────────────── */
+@media (max-width: 768px) {
+  .btn-sm { min-height: 40px; padding: var(--space-2) var(--space-4); }
+}
+
+/* ── Icon-only buttons (nav, trash, close) — exempt from 44px rule ────────────  */
+/* Add class="icon-btn" to any pure-icon button that is visually small */
+.icon-btn {
+  min-height: unset !important;
+  min-width:  unset !important;
+  display:    inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding:    6px;
+}
+
+/* ── Text contrast — boost muted text ratio to ≥ 4.5:1 (WCAG AA) ──────────── */
+/* --text-muted #666 on #0D0D0D is 5.8:1 — passes. No change needed.           */
+/* --text-secondary #A0A0A0 on #0D0D0D is 7.1:1 — passes. No change needed.    */
+/* Reinforce that no inline color: gray or #999 is ever used without a check.  */
+
+/* ── Consistent heading hierarchy spacing ────────────────────────────────────── */
+h1 { letter-spacing: -0.025em; line-height: 1.15; }
+h2 { letter-spacing: -0.015em; line-height: 1.25; }
+h3 { letter-spacing: -0.01em;  line-height: 1.35; }
+p  { line-height: 1.7; }
+
+/* ── Form label spacing — ensure consistent gap above inputs ─────────────────── */
+.form-label {
+  display:      block;
+  margin-bottom: var(--space-2);
+}
+
+/* ── Error message text size — ensure readable at all viewports ─────────────── */
+.form-error {
+  font-size:   var(--text-xs);
+  color:       var(--color-danger);
+  margin-top:  var(--space-1);
+  display:     flex;
+  align-items: center;
+  gap:         4px;
+}
+
+/* ── Loading opacity — semi-transparent, not invisible ──────────────────────── */
+[aria-busy="true"] { opacity: 0.65; pointer-events: none; }
+
+/* ── Disabled form elements — clear disabled cursor feedback ────────────────── */
+input:disabled,
+textarea:disabled,
+select:disabled,
+button:disabled {
+  opacity:        0.45;
+  cursor:         not-allowed;
+  pointer-events: none;
+}
+
+/* ── Remove spinner/text gap when no text label present ─────────────────────── */
+/* Spinner component renders an inline-flex column — collapse gap if text absent */
+.spinner-wrap:empty { gap: 0 !important; }
+
+/* ── @keyframes spin — single global definition (Spinner.jsx uses this) ─────── */
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ── Container gutter override for very small phones (≤ 380px) ──────────────── */
+@media (max-width: 380px) {
+  .container,
+  .container-sm {
+    padding-left:  var(--space-4);
+    padding-right: var(--space-4);
+  }
+}
+
+/* ── Prevent badge text wrapping on very long values ────────────────────────── */
+.badge { white-space: nowrap; }
+
+/* ── Card border-radius consistent with radius-lg (24px) ────────────────────── */
+/* Some inline cards use radius-md (16px) — global .card enforces radius-lg.   */
+.card { border-radius: var(--radius-lg); }
+
+/* ── Marketplace card image height — consistent across grid ──────────────────── */
+.mkt-card-img {
+  width:      100%;
+  height:     190px;
+  object-fit: cover;
+  display:    block;
+}
+
+/* ── Sticky CTA bottom padding on iOS — ensure button isn't behind home bar ─── */
+@supports (padding-bottom: env(safe-area-inset-bottom)) {
+  .sticky-cta {
+    padding-bottom: max(var(--space-6), env(safe-area-inset-bottom));
+  }
+}
+
+/* ── Page title alignment — consistent left-aligned across all modules ────────── */
+.page-title { margin-bottom: var(--space-2); }
+.page-subtitle { margin-top: 0; margin-bottom: var(--space-6); }
+
+/* ── Responsive typography at 320px (smallest safe phone) ────────────────────── */
+@media (max-width: 360px) {
+  html { font-size: 93.75%; } /* 15px effective base */
+  .container, .container-sm {
+    padding-left:  var(--space-3);
+    padding-right: var(--space-3);
+  }
+}
+

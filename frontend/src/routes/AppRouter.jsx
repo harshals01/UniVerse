@@ -31,9 +31,18 @@ import Notes from '../pages/Notes.jsx';
 const MainLayout = ({ children }) => (
   <>
     <Navbar />
-    <main>{children}</main>
+    {/* Top bar is 60px tall — push content below it. No left margin needed. */}
+    <main style={{
+      marginTop:  'var(--topbar-height, 60px)',
+      minHeight:  'calc(100vh - var(--topbar-height, 60px))',
+      background: 'var(--bg-base)',
+      overflowX:  'hidden',
+    }}>
+      {children}
+    </main>
   </>
 );
+
 
 // ── Guard: redirect logged-in users away from auth pages ─────────────────────
 const PublicOnlyRoute = ({ children }) => {

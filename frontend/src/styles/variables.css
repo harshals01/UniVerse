@@ -5,35 +5,37 @@
 
 :root {
   /* ── Brand Colors ────────────────────────────────────────────────────────── */
-  --color-primary:       #6c63ff;   /* Purple — main brand */
-  --color-primary-dark:  #5a52d5;
-  --color-primary-light: #8b85ff;
-  --color-primary-glow:  rgba(108, 99, 255, 0.25);
+  --color-primary:       #E54503;   /* Orange — main brand accent */
+  --color-primary-dark:  #c93c02;
+  --color-primary-light: #ff6b35;
+  --color-primary-glow:  rgba(229, 69, 3, 0.20);
 
-  --color-accent:        #ff6584;   /* Pink accent */
+  --color-accent:        #ff6b35;   /* Lighter orange accent */
   --color-success:       #22c55e;
   --color-warning:       #f59e0b;
   --color-danger:        #ef4444;
   --color-info:          #3b82f6;
 
   /* ── Dark Theme Background ────────────────────────────────────────────────── */
-  --bg-base:             #0d0d14;   /* Deepest background */
-  --bg-surface:          #13131f;   /* Cards, panels */
-  --bg-elevated:         #1a1a2e;   /* Modals, dropdowns */
-  --bg-input:            #1f1f35;   /* Input fields */
-  --bg-hover:            #252540;   /* Hover states */
+  --bg-base:             #0D0D0D;   /* Deepest background — pure charcoal canvas */
+  --bg-surface:          #202020;   /* Cards, panels — primary surface layer */
+  --bg-elevated:         #2A2A2A;   /* Modals, dropdowns — elevated surface */
+  --bg-input:            #2A2A2A;   /* Input fields — blends into surface */
+  --bg-hover:            #303030;   /* Hover states */
 
   /* ── Text ───────────────────────────────────────────────────────────────── */
-  --text-primary:        #f1f1f6;
-  --text-secondary:      #a0a0b8;
-  --text-muted:          #6b6b85;
+  --text-primary:        #FFFFFF;
+  --text-secondary:      #A0A0A0;
+  --text-muted:          #666666;
   --text-link:           var(--color-primary-light);
 
   /* ── Borders ─────────────────────────────────────────────────────────────── */
-  --border-subtle:       rgba(255, 255, 255, 0.06);
-  --border-default:      rgba(255, 255, 255, 0.10);
-  --border-strong:       rgba(255, 255, 255, 0.18);
-  --border-primary:      rgba(108, 99, 255, 0.40);
+  /* Note: Per design spec, hard borders are avoided. These are only for      */
+  /* accessibility fallbacks (ghost borders at low opacity).                  */
+  --border-subtle:       rgba(255, 255, 255, 0.05);
+  --border-default:      rgba(255, 255, 255, 0.08);
+  --border-strong:       rgba(255, 255, 255, 0.15);
+  --border-primary:      rgba(229, 69, 3, 0.40);
 
   /* ── Spacing ─────────────────────────────────────────────────────────────── */
   --space-1:  4px;
@@ -48,20 +50,22 @@
   --space-16: 64px;
 
   /* ── Border Radius ───────────────────────────────────────────────────────── */
-  --radius-sm:   6px;
-  --radius-md:   10px;
-  --radius-lg:   16px;
-  --radius-xl:   24px;
-  --radius-full: 9999px;
+  --radius-sm:   8px;    /* Small elements: badges, small chips */
+  --radius-md:   16px;   /* Inputs, small cards */
+  --radius-lg:   24px;   /* Main containers, panels */
+  --radius-xl:   32px;   /* Hero cards, auth modals */
+  --radius-pill: 9999px; /* Buttons, tags — fully rounded */
+  --radius-full: 9999px; /* Legacy alias */
 
   /* ── Shadows ─────────────────────────────────────────────────────────────── */
-  --shadow-sm:  0 1px 3px rgba(0,0,0,0.3);
-  --shadow-md:  0 4px 16px rgba(0,0,0,0.4);
-  --shadow-lg:  0 8px 32px rgba(0,0,0,0.5);
+  /* Ambient-only shadows — no hard offsets per design spec.                  */
+  --shadow-sm:  0 4px 12px rgba(0,0,0,0.25);
+  --shadow-md:  0 12px 32px rgba(0,0,0,0.35);
+  --shadow-lg:  0 20px 40px rgba(0,0,0,0.40);
   --shadow-glow: 0 0 24px var(--color-primary-glow);
 
   /* ── Typography ──────────────────────────────────────────────────────────── */
-  --font-sans:  'Inter', system-ui, -apple-system, sans-serif;
+  --font-sans:  'Poppins', 'Inter', system-ui, -apple-system, sans-serif;
   --font-mono:  'Fira Code', 'Cascadia Code', monospace;
 
   --text-xs:   0.75rem;
@@ -83,4 +87,8 @@
   --z-sticky:   200;
   --z-modal:    300;
   --z-toast:    400;
+
+  /* ── Layout ──────────────────────────────────────────────────────────────── */
+  --topbar-height: 60px;   /* Fixed top navigation bar height */
+  --page-pad-x:    24px;   /* Horizontal page gutter */
 }

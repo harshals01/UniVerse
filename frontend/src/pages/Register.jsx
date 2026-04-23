@@ -1,8 +1,11 @@
 /**
  * pages/Register.jsx
  * ─────────────────────────────────────────────────────────────────────────────
- * Registration page — name, email, college, password + confirm.
- * On success: logs user in immediately and navigates to dashboard.
+ * Registration page — Dark Modular theme.
+ * Focused centered card with progress indicator.
+ * Two-column name/college row on desktop, stacked on mobile.
+ *
+ * All form validation, state hooks, and API logic are unchanged.
  * ─────────────────────────────────────────────────────────────────────────────
  */
 
@@ -18,7 +21,7 @@ const INITIAL = { name: '', email: '', college: '', password: '', confirm: '' };
 export default function Register() {
   const { login }    = useAuth();
   const navigate     = useNavigate();
-  const [form, setForm]       = useState(INITIAL);
+  const [form, setForm]        = useState(INITIAL);
   const [showPass, setShowPass] = useState(false);
   const [loading,  setLoading] = useState(false);
   const [errors,   setErrors]  = useState({});
@@ -31,13 +34,13 @@ export default function Register() {
 
   const validate = () => {
     const e = {};
-    if (!form.name.trim())          e.name    = 'Full name is required';
-    else if (form.name.length < 2)  e.name    = 'Name must be at least 2 characters';
+    if (!form.name.trim())         e.name     = 'Full name is required';
+    else if (form.name.length < 2) e.name     = 'Name must be at least 2 characters';
 
-    if (!form.email.trim())         e.email   = 'Email is required';
+    if (!form.email.trim())        e.email    = 'Email is required';
     else if (!/\S+@\S+\.\S+/.test(form.email)) e.email = 'Enter a valid email';
 
-    if (!form.password)             e.password = 'Password is required';
+    if (!form.password)            e.password = 'Password is required';
     else if (form.password.length < 6) e.password = 'Password must be at least 6 characters';
 
     if (form.password !== form.confirm) e.confirm = 'Passwords do not match';
@@ -70,29 +73,49 @@ export default function Register() {
 
   return (
     <div style={{
-      minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center',
-      background: 'var(--bg-base)', padding: 'var(--space-6)',
+      minHeight:       '100vh',
+      display:         'flex',
+      alignItems:      'center',
+      justifyContent:  'center',
+      background:      'var(--bg-base)',
+      padding:         'var(--space-6)',
+      position:        'relative',
     }}>
-      {/* Background decoration */}
-      <div style={{ position:'fixed', inset:0, pointerEvents:'none', overflow:'hidden', zIndex:0 }}>
-        <div style={{ position:'absolute', top:'-20%', right:'-10%', width:500, height:500, borderRadius:'50%', background:'var(--color-primary)', opacity:0.04, filter:'blur(80px)' }} />
-        <div style={{ position:'absolute', bottom:'-10%', left:'-10%', width:400, height:400, borderRadius:'50%', background:'var(--color-accent)', opacity:0.05, filter:'blur(60px)' }} />
+      {/* Ambient background glows */}
+      <div style={{ position: 'fixed', inset: 0, pointerEvents: 'none', overflow: 'hidden', zIndex: 0 }}>
+        <div style={glow({ top: '-15%', right: '-8%',  color: 'var(--color-primary)', size: 480 })} />
+        <div style={glow({ bottom: '-10%', left: '-8%', color: 'var(--color-accent)',   size: 360 })} />
       </div>
 
+      {/* ── Register card ────────────────────────────────────────────────────── */}
       <div style={{
-        position: 'relative', zIndex: 1,
-        width: '100%', maxWidth: 520,
-        background: 'var(--bg-surface)',
-        border: '1px solid var(--border-default)',
-        borderRadius: 'var(--radius-xl)',
-        padding: 'var(--space-10) var(--space-8)',
-        boxShadow: 'var(--shadow-lg)',
+        position:     'relative',
+        zIndex:       1,
+        width:        '100%',
+        maxWidth:     540,
+        background:   'var(--bg-surface)',
+        borderRadius: 'var(--radius-xl)',    /* 32px */
+        padding:      'var(--space-10) var(--space-8)',
+        boxShadow:    'var(--shadow-lg)',
       }}>
 
         {/* Header */}
-        <div style={{ textAlign: 'center', marginBottom: 'var(--space-8)' }}>
-          <div style={{ fontSize: '2.5rem', marginBottom: 'var(--space-3)' }}>⚡</div>
-          <h1 style={{ fontSize: 'var(--text-2xl)', fontWeight: 800, marginBottom: 'var(--space-2)' }}>
+        <div style={{ textAlign: 'center', marginBottom: 'var(--space-6)' }}>
+          <div style={{
+            width: 52, height: 52, borderRadius: '50%',
+            background: 'var(--color-primary)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            fontSize: '1.4rem', color: '#fff', fontWeight: 800,
+            margin: '0 auto var(--space-4)',
+          }}>
+            U
+          </div>
+          <h1 style={{
+            fontSize:      'var(--text-2xl)',
+            fontWeight:    800,
+            marginBottom:  'var(--space-2)',
+            letterSpacing: '-0.02em',
+          }}>
             Create your account
           </h1>
           <p style={{ color: 'var(--text-secondary)', fontSize: 'var(--text-sm)' }}>
@@ -101,13 +124,14 @@ export default function Register() {
         </div>
 
         {/* Progress dots */}
-        <div style={{ display:'flex', justifyContent:'center', gap: 8, marginBottom:'var(--space-6)' }}>
-          {[1,2,3].map(s => (
+        <div style={{ display: 'flex', justifyContent: 'center', gap: 8, marginBottom: 'var(--space-6)' }}>
+          {[1, 2, 3].map(s => (
             <div key={s} style={{
-              width: s <= step ? 24 : 8, height: 8,
-              borderRadius: 'var(--radius-full)',
-              background: s <= step ? 'var(--color-primary)' : 'var(--border-default)',
-              transition: 'all var(--transition-base)',
+              width:        s <= step ? 28 : 8,
+              height:       6,
+              borderRadius: 'var(--radius-pill)',
+              background:   s <= step ? 'var(--color-primary)' : 'var(--bg-elevated)',
+              transition:   'all var(--transition-base)',
             }} />
           ))}
         </div>
@@ -116,15 +140,15 @@ export default function Register() {
               style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-4)' }}>
 
           {/* ── Row 1: Name + College ──────────────────────────────────────── */}
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--space-4)' }}>
+          <div className="reg-row-2col">
             <div className="form-group">
               <label htmlFor="reg-name" className="form-label">Full name *</label>
               <input
                 id="reg-name" name="name" type="text"
-                placeholder="Alice Smith"
+                placeholder="Alex Smith"
                 value={form.name} onChange={change}
                 onFocus={() => setStep(1)}
-                style={errors.name ? { borderColor: 'var(--color-danger)' } : {}}
+                style={errors.name ? { boxShadow: '0 0 0 2px var(--color-danger)' } : {}}
               />
               {errors.name && <FieldError msg={errors.name} />}
             </div>
@@ -139,20 +163,20 @@ export default function Register() {
             </div>
           </div>
 
-          {/* ── Email ────────────────────────────────────────────────────────── */}
+          {/* ── Email ──────────────────────────────────────────────────────── */}
           <div className="form-group">
             <label htmlFor="reg-email" className="form-label">Email address *</label>
             <input
               id="reg-email" name="email" type="email"
-              placeholder="alice@university.edu"
+              placeholder="alex@university.edu"
               value={form.email} onChange={change}
               onFocus={() => setStep(2)}
-              style={errors.email ? { borderColor: 'var(--color-danger)' } : {}}
+              style={errors.email ? { boxShadow: '0 0 0 2px var(--color-danger)' } : {}}
             />
             {errors.email && <FieldError msg={errors.email} />}
           </div>
 
-          {/* ── Password ─────────────────────────────────────────────────────── */}
+          {/* ── Password ───────────────────────────────────────────────────── */}
           <div className="form-group">
             <label htmlFor="reg-password" className="form-label">Password * (min. 6 characters)</label>
             <div style={{ position: 'relative' }}>
@@ -162,20 +186,29 @@ export default function Register() {
                 placeholder="Create a strong password"
                 value={form.password} onChange={change}
                 onFocus={() => setStep(3)}
-                style={{ paddingRight: 48, ...(errors.password ? { borderColor: 'var(--color-danger)' } : {}) }}
+                style={{
+                  paddingRight: 48,
+                  ...(errors.password ? { boxShadow: '0 0 0 2px var(--color-danger)' } : {}),
+                }}
               />
-              <button type="button" onClick={() => setShowPass(s => !s)}
-                style={{ position:'absolute', right:12, top:'50%', transform:'translateY(-50%)', background:'none', border:'none', cursor:'pointer', color:'var(--text-muted)', fontSize:'var(--text-sm)' }}>
+              <button
+                type="button"
+                onClick={() => setShowPass(s => !s)}
+                style={{
+                  position: 'absolute', right: 14, top: '50%', transform: 'translateY(-50%)',
+                  background: 'none', border: 'none', cursor: 'pointer',
+                  color: 'var(--text-muted)', fontSize: '1rem', lineHeight: 1,
+                }}
+                aria-label={showPass ? 'Hide password' : 'Show password'}
+              >
                 {showPass ? '🙈' : '👁️'}
               </button>
             </div>
             {errors.password && <FieldError msg={errors.password} />}
-
-            {/* Password strength bar */}
             {form.password && <PasswordStrength password={form.password} />}
           </div>
 
-          {/* ── Confirm password ─────────────────────────────────────────────── */}
+          {/* ── Confirm password ───────────────────────────────────────────── */}
           <div className="form-group">
             <label htmlFor="reg-confirm" className="form-label">Confirm password *</label>
             <input
@@ -183,36 +216,88 @@ export default function Register() {
               type={showPass ? 'text' : 'password'}
               placeholder="Repeat your password"
               value={form.confirm} onChange={change}
-              style={errors.confirm ? { borderColor: 'var(--color-danger)' } : {}}
+              style={errors.confirm ? { boxShadow: '0 0 0 2px var(--color-danger)' } : {}}
             />
             {errors.confirm && <FieldError msg={errors.confirm} />}
             {form.confirm && form.password === form.confirm && (
-              <span style={{ color:'var(--color-success)', fontSize:'var(--text-xs)' }}>✓ Passwords match</span>
+              <span style={{ color: 'var(--color-success)', fontSize: 'var(--text-xs)', display: 'flex', alignItems: 'center', gap: 4 }}>
+                ✓ Passwords match
+              </span>
             )}
           </div>
 
           {/* Submit */}
-          <button id="register-submit" type="submit" className="btn btn-primary btn-lg"
-            disabled={loading} style={{ width:'100%', marginTop:'var(--space-2)' }}>
+          <button
+            id="register-submit"
+            type="submit"
+            disabled={loading}
+            style={{
+              width:        '100%',
+              marginTop:    'var(--space-2)',
+              padding:      'var(--space-4) var(--space-6)',
+              borderRadius: 'var(--radius-pill)',
+              background:   loading ? 'var(--color-primary-dark)' : 'var(--color-primary)',
+              color:        '#fff',
+              fontWeight:   700,
+              fontSize:     'var(--text-base)',
+              border:       'none',
+              cursor:       loading ? 'not-allowed' : 'pointer',
+              display:      'flex',
+              alignItems:   'center',
+              justifyContent: 'center',
+              gap:          'var(--space-2)',
+              transition:   'background var(--transition-fast), box-shadow var(--transition-fast)',
+              opacity:      loading ? 0.7 : 1,
+            }}
+            onMouseEnter={e => { if (!loading) { e.currentTarget.style.background = 'var(--color-primary-dark)'; e.currentTarget.style.boxShadow = '0 0 20px var(--color-primary-glow)'; }}}
+            onMouseLeave={e => { e.currentTarget.style.background = 'var(--color-primary)'; e.currentTarget.style.boxShadow = 'none'; }}
+          >
             {loading ? <Spinner size="sm" /> : 'Create account →'}
           </button>
         </form>
 
-        <p style={{ textAlign:'center', marginTop:'var(--space-6)', color:'var(--text-secondary)', fontSize:'var(--text-sm)' }}>
+        <p style={{ textAlign: 'center', marginTop: 'var(--space-6)', color: 'var(--text-secondary)', fontSize: 'var(--text-sm)' }}>
           Already have an account?{' '}
-          <Link to="/login" id="go-login" style={{ color:'var(--color-primary-light)', fontWeight:600 }}>
-            Sign in
+          <Link to="/login" id="go-login"
+                style={{ color: 'var(--color-primary)', fontWeight: 700, textDecoration: 'none' }}>
+            Sign in →
           </Link>
         </p>
       </div>
+
+      {/* Responsive 2-col row */}
+      <style>{`
+        .reg-row-2col {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: var(--space-4);
+        }
+        @media (max-width: 480px) {
+          .reg-row-2col { grid-template-columns: 1fr; }
+        }
+      `}</style>
     </div>
   );
 }
 
-// ── Field error helper ────────────────────────────────────────────────────────
+// ── Helpers ───────────────────────────────────────────────────────────────────
 const FieldError = ({ msg }) => (
-  <span style={{ color:'var(--color-danger)', fontSize:'var(--text-xs)' }}>⚠ {msg}</span>
+  <span style={{ color: 'var(--color-danger)', fontSize: 'var(--text-xs)', display: 'flex', alignItems: 'center', gap: 4 }}>
+    ⚠ {msg}
+  </span>
 );
+
+const glow = ({ top, left, bottom, right, color, size = 240 }) => ({
+  position:     'absolute',
+  top, left, bottom, right,
+  width:        size,
+  height:       size,
+  borderRadius: '50%',
+  background:   color,
+  opacity:      0.07,
+  filter:       `blur(${size * 0.35}px)`,
+  pointerEvents: 'none',
+});
 
 // ── Password strength indicator ───────────────────────────────────────────────
 function PasswordStrength({ password }) {
@@ -227,18 +312,19 @@ function PasswordStrength({ password }) {
   const colors = ['', 'var(--color-danger)', 'var(--color-warning)', 'var(--color-info)', 'var(--color-success)'];
 
   return (
-    <div style={{ marginTop: 4 }}>
-      <div style={{ display:'flex', gap:3, height:3 }}>
-        {[1,2,3,4].map(i => (
+    <div style={{ marginTop: 6 }}>
+      <div style={{ display: 'flex', gap: 4, height: 4, borderRadius: 'var(--radius-pill)' }}>
+        {[1, 2, 3, 4].map(i => (
           <div key={i} style={{
-            flex:1, borderRadius:'var(--radius-full)',
-            background: i <= score ? colors[score] : 'var(--border-default)',
-            transition: 'background var(--transition-fast)',
+            flex:         1,
+            borderRadius: 'var(--radius-pill)',
+            background:   i <= score ? colors[score] : 'var(--bg-elevated)',
+            transition:   'background var(--transition-fast)',
           }} />
         ))}
       </div>
       {score > 0 && (
-        <span style={{ fontSize:'var(--text-xs)', color: colors[score] }}>
+        <span style={{ fontSize: 'var(--text-xs)', color: colors[score], marginTop: 4, display: 'block' }}>
           {levels[score]}
         </span>
       )}

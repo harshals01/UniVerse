@@ -28,8 +28,9 @@ export default function FormField({
   min, max, step, accept, autoComplete,
 }) {
   const hasError = Boolean(error);
-  const borderStyle = hasError
-    ? { borderColor: 'var(--color-danger)' }
+  // Error state: orange-red focus ring via box-shadow — no harsh border flash
+  const errorStyle = hasError
+    ? { boxShadow: '0 0 0 2px var(--color-danger)', background: 'var(--bg-input)' }
     : {};
 
   const commonProps = {
@@ -39,7 +40,7 @@ export default function FormField({
     onChange:    onChange,
     placeholder: placeholder,
     required:    required,
-    style:       { ...borderStyle, ...inputStyle },
+    style:       { ...errorStyle, ...inputStyle },
     'aria-describedby': hint || error ? `${id}-hint` : undefined,
     'aria-invalid': hasError ? 'true' : undefined,
   };
@@ -74,11 +75,18 @@ export default function FormField({
             fontSize: 'var(--text-xs)',
             color: hasError ? 'var(--color-danger)' : 'var(--text-muted)',
             display: 'flex', alignItems: 'center', gap: 4,
+            marginTop: 2,
           }}
         >
-          {hasError ? '⚠ ' : ''}{error || hint}
+          {hasError ? '⚠ ' : 'ℹ '}{error || hint}
         </span>
       )}
+
+      {/* Scoped styles — placeholder contrast + input polish */}
+      <style>{`
+        #${id}::placeholder { color: var(--text-muted); opacity: 1; }
+        #${id}:focus { background: var(--bg-hover); }
+      `}</style>
     </div>
   );
 }

@@ -4,16 +4,21 @@
  */
 
 const BADGE_MAP = {
-  lost:     'badge-lost',
-  found:    'badge-found',
-  open:     'badge-open',
-  claimed:  'badge-claimed',
-  resolved: 'badge-claimed',
-  sell:     'badge-sell',
-  new:      'badge-found',
+  // Item type
+  lost:      'badge-lost',
+  found:     'badge-found',
+  // Status
+  open:      'badge-open',
+  claimed:   'badge-claimed',
+  resolved:  'badge-claimed',
+  sold:      'badge-sold',
+  // Condition
+  new:       'badge-found',
   'like-new':'badge-found',
-  good:     'badge-sell',
-  fair:     'badge-claimed',
+  good:      'badge-sell',
+  fair:      'badge-claimed',
+  // Listing type
+  sell:      'badge-sell',
 };
 
 export default function Badge({ value, label }) {

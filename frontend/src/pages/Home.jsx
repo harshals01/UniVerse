@@ -136,7 +136,7 @@ export default function Home() {
         </div>
 
         {/* ── Module cards ───────────────────────────────────────────────────── */}
-        <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(320px, 1fr))', gap:'var(--space-6)' }}>
+        <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(min(280px, 100%), 1fr))', gap:'var(--space-6)' }}>
           {MODULES.map(mod => <ModuleCard key={mod.id} mod={mod} navigate={navigate} />)}
         </div>
 
@@ -220,7 +220,7 @@ function ModuleCard({ mod, navigate }) {
         </div>
 
         {/* Action buttons */}
-        <div style={{ display:'flex', gap:'var(--space-3)' }}>
+        <div style={{ display:'flex', gap:'var(--space-3)', flexWrap:'wrap' }}>
           {mod.actions.map(a => (
             <button
               key={a.label}
