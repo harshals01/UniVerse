@@ -1,6 +1,5 @@
 # UniVerse
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Node.js](https://img.shields.io/badge/Node.js-18.x-green.svg)](https://nodejs.org/)
 [![React](https://img.shields.io/badge/React-18.x-blue.svg)](https://reactjs.org/)
 
@@ -99,24 +98,7 @@ Once both servers are running:
 3. Access the **Marketplace** to post an old textbook.
 4. Try out the **Notes** module by writing a brief text or uploading a standard markdown note to generate simple AI summaries.
 
-## 🆘 Where to get Help
-
-We want you to be successful when relying on UniVerse. If you've run into an issue or need clarification:
-
-*   **Bugs or Feature Requests**: Please use the [GitHub Issues tracker](../../issues) to report bugs or make suggestions.
-*   **Documentation**: Please check out our [Documentation Wiki](../../wiki) for advanced guides.
-
-## 🤝 Contributing
-
-We actively welcome continuous improvements and contributions to UniVerse! You don't have to be a core team member to push changes. 
-
-Please review our [Contribution Guidelines](docs/CONTRIBUTING.md) to understand exactly how to submit a PR or set up testing.
 
 ## 📜 License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## 👨‍💻 Maintainers
-
-UniVerse is maintained by the **UniVerse Team**.
-For direct inquiries or security issues, please contact [maintainers@universe-platform.app](mailto:maintainers@universe-platform.app).
