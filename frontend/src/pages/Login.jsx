@@ -64,17 +64,19 @@ export default function Login() {
       {/* ── Left decorative panel (desktop only) ─────────────────────────────── */}
       <div className="auth-art-panel">
         {/* Ambient glows */}
-        <div style={glow({ top: '10%', left: '15%', color: 'var(--color-primary)', size: 300 })} />
-        <div style={glow({ top: '65%', left: '55%', color: 'var(--color-accent)',   size: 200 })} />
+        <div style={glow({ top: '10%', left: '15%', color: '#8B5CF6', size: 320 })} />
+        <div style={glow({ top: '65%', left: '55%', color: '#6366F1', size: 220 })} />
+        <div style={glow({ top: '40%', left: '80%', color: '#06B6D4', size: 160 })} />
 
         <div style={{ position: 'relative', zIndex: 1, textAlign: 'center', maxWidth: 360 }}>
           {/* Brand mark */}
           <div style={{
-            width: 64, height: 64, borderRadius: '50%',
-            background: 'var(--color-primary)',
+            width: 64, height: 64, borderRadius: 18,
+            background: 'linear-gradient(135deg, #8B5CF6, #6366F1)',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
             fontSize: '1.8rem', color: '#fff', fontWeight: 800,
             margin: '0 auto var(--space-6)',
+            boxShadow: '0 8px 32px rgba(139,92,246,0.40)',
           }}>
             U
           </div>
@@ -89,18 +91,19 @@ export default function Login() {
           {/* Feature pills */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-3)', marginTop: 'var(--space-8)', alignItems: 'flex-start' }}>
             {[
-              { icon: '◎', label: 'Lost & Found — recover what matters' },
-              { icon: '◈', label: 'Marketplace — trade with students' },
-              { icon: '✦', label: 'AI Notes — study smarter' },
+              { icon: '🔍', label: 'Lost & Found — recover what matters' },
+              { icon: '🛍️', label: 'Marketplace — trade with students' },
+              { icon: '✨', label: 'AI Notes — study smarter' },
             ].map(f => (
               <div key={f.label} style={{
                 display: 'flex', alignItems: 'center', gap: 'var(--space-3)',
                 padding: '10px 16px',
                 borderRadius: 'var(--radius-pill)',
-                background: 'rgba(229,69,3,0.08)',
+                background: 'rgba(139,92,246,0.10)',
+                border: '1px solid rgba(139,92,246,0.20)',
                 fontSize: 'var(--text-sm)', color: 'var(--text-secondary)',
               }}>
-                <span style={{ color: 'var(--color-primary)', fontSize: '1rem' }}>{f.icon}</span>
+                <span style={{ fontSize: '1rem' }}>{f.icon}</span>
                 {f.label}
               </div>
             ))}
@@ -117,13 +120,19 @@ export default function Login() {
         padding:        'var(--space-8) var(--space-6)',
       }}>
         <div style={{
-          width:        '100%',
-          maxWidth:     440,
-          background:   'var(--bg-surface)',
-          borderRadius: 'var(--radius-xl)',   /* 32px */
-          padding:      'var(--space-10) var(--space-8)',
-          boxShadow:    'var(--shadow-lg)',
+          width:          '100%',
+          maxWidth:       440,
+          background:     'rgba(18,22,34,0.80)',
+          border:         '1px solid var(--border-glass)',
+          borderRadius:   'var(--radius-xl)',
+          padding:        'var(--space-10) var(--space-8)',
+          boxShadow:      'var(--shadow-lg), 0 0 60px rgba(139,92,246,0.08)',
+          backdropFilter: 'var(--blur-md)',
+          position:       'relative',
+          overflow:       'hidden',
         }}>
+          {/* inner shine */}
+          <div style={{ position:'absolute',inset:0,borderRadius:'inherit',background:'linear-gradient(135deg,rgba(255,255,255,0.04) 0%,transparent 50%)',pointerEvents:'none' }} />
 
           {/* Header */}
           <div style={{ marginBottom: 'var(--space-8)' }}>
@@ -197,28 +206,10 @@ export default function Login() {
               id="login-submit"
               type="submit"
               disabled={loading}
-              style={{
-                width:        '100%',
-                marginTop:    'var(--space-2)',
-                padding:      'var(--space-4) var(--space-6)',
-                borderRadius: 'var(--radius-pill)',
-                background:   loading ? 'var(--color-primary-dark)' : 'var(--color-primary)',
-                color:        '#fff',
-                fontWeight:   700,
-                fontSize:     'var(--text-base)',
-                border:       'none',
-                cursor:       loading ? 'not-allowed' : 'pointer',
-                display:      'flex',
-                alignItems:   'center',
-                justifyContent: 'center',
-                gap:          'var(--space-2)',
-                transition:   'background var(--transition-fast), box-shadow var(--transition-fast)',
-                opacity:      loading ? 0.7 : 1,
-              }}
-              onMouseEnter={e => { if (!loading) { e.currentTarget.style.background = 'var(--color-primary-dark)'; e.currentTarget.style.boxShadow = '0 0 20px var(--color-primary-glow)'; }}}
-              onMouseLeave={e => { e.currentTarget.style.background = 'var(--color-primary)'; e.currentTarget.style.boxShadow = 'none'; }}
+              className="btn btn-primary btn-lg"
+              style={{ width: '100%', marginTop: 'var(--space-2)' }}
             >
-              {loading ? <Spinner size="sm" /> : 'Sign in'}
+              {loading ? <Spinner size="sm" /> : 'Sign in →'}
             </button>
           </form>
 
@@ -242,20 +233,15 @@ export default function Login() {
       {/* Scoped responsive + art panel styles */}
       <style>{`
         .auth-art-panel {
-          width: 420px;
-          flex-shrink: 0;
-          background: var(--bg-surface);
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          justify-content: center;
+          width: 420px; flex-shrink: 0;
+          background: rgba(11,15,23,0.90);
+          border-right: 1px solid var(--border-glass);
+          display: flex; flex-direction: column;
+          align-items: center; justify-content: center;
           padding: var(--space-12);
-          position: relative;
-          overflow: hidden;
+          position: relative; overflow: hidden;
         }
-        @media (max-width: 768px) {
-          .auth-art-panel { display: none; }
-        }
+        @media (max-width: 768px) { .auth-art-panel { display: none; } }
       `}</style>
     </div>
   );

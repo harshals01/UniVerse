@@ -1,249 +1,241 @@
 /**
- * pages/Home.jsx
- * ─────────────────────────────────────────────────────────────────────────────
- * Dashboard / landing page for logged-in users.
- * Shows: Welcome greeting, 3 module cards, quick-action buttons.
- * ─────────────────────────────────────────────────────────────────────────────
+ * pages/Home.jsx — Premium Bento Grid Dashboard
  */
-
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext.jsx';
-
-const MODULES = [
-  {
-    id:          'module-lostfound',
-    emoji:       '🔍',
-    title:       'Lost & Found',
-    description: 'Report lost items or help others find theirs. Post photos, set locations, and mark items as claimed.',
-    path:        '/lostfound',
-    gradient:    'linear-gradient(135deg, #ef4444 0%, #f97316 100%)',
-    glow:        'rgba(239,68,68,0.2)',
-    stats:       [
-      { label:'Item types', value:'Electronics, Keys, Bags…' },
-      { label:'Statuses',   value:'Open · Claimed · Resolved' },
-    ],
-    actions: [
-      { label:'Browse items',  path:'/lostfound',        primary: false },
-      { label:'+ Report item', path:'/lostfound/create', primary: true  },
-    ],
-  },
-  {
-    id:          'module-marketplace',
-    emoji:       '🛒',
-    title:       'Marketplace',
-    description: 'Buy and sell items with fellow students. List textbooks, gadgets, furniture, and more.',
-    path:        '/marketplace',
-    gradient:    'linear-gradient(135deg, #3b82f6 0%, #06b6d4 100%)',
-    glow:        'rgba(59,130,246,0.2)',
-    stats: [
-      { label:'Conditions', value:'New · Like-new · Good · Fair' },
-      { label:'Filters',    value:'Category · Price · Availability' },
-    ],
-    actions: [
-      { label:'Browse listings', path:'/marketplace',        primary: false },
-      { label:'+ Sell item',     path:'/marketplace/create', primary: true  },
-    ],
-  },
-  {
-    id:          'module-notes',
-    emoji:       '🤖',
-    title:       'AI Notes',
-    description: 'Write notes and let AI generate structured content, summarize your material, or create quiz questions.',
-    path:        '/notes',
-    gradient:    'linear-gradient(135deg, #6c63ff 0%, #a855f7 100%)',
-    glow:        'rgba(108,99,255,0.2)',
-    stats: [
-      { label:'AI modes',     value:'Generate · Summarize · Quiz' },
-      { label:'History',      value:'Every interaction saved' },
-    ],
-    actions: [
-      { label:'My notes',      path:'/notes',        primary: false },
-      { label:'+ New note',    path:'/notes',        primary: true  },
-    ],
-  },
-];
+import {
+  PackageSearch, ShoppingBag, Sparkles,
+  ArrowUpRight, Plus, TrendingUp, Clock, Zap,
+} from 'lucide-react';
 
 export default function Home() {
-  const { user }   = useAuth();
-  const navigate   = useNavigate();
-  const hour       = new Date().getHours();
-  const greeting   = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening';
+  const { user }  = useAuth();
+  const navigate  = useNavigate();
+  const hour      = new Date().getHours();
+  const greeting  = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening';
+  const first     = user?.name?.split(' ')[0] ?? 'there';
 
   return (
     <div className="page">
-      <div className="container">
 
-        {/* ── Hero greeting ──────────────────────────────────────────────────── */}
-        <div style={{
-          background: 'linear-gradient(135deg, var(--bg-surface) 0%, var(--bg-elevated) 100%)',
-          border: '1px solid var(--border-subtle)',
-          borderRadius: 'var(--radius-xl)',
-          padding: 'var(--space-10) var(--space-8)',
-          marginBottom: 'var(--space-10)',
-          position: 'relative', overflow: 'hidden',
-        }}>
-          {/* Background glow */}
-          <div style={{ position:'absolute', top:'-40%', right:'-5%', width:400, height:400, borderRadius:'50%', background:'var(--color-primary)', opacity:0.05, filter:'blur(60px)', pointerEvents:'none' }} />
+      {/* ── Welcome Banner ─────────────────────────────────────────────────── */}
+      <div style={{ marginBottom: 28 }}>
+        <p style={{ color: 'var(--text-muted)', fontSize: 'var(--text-sm)', marginBottom: 6 }}>
+          {greeting} 👋
+        </p>
+        <h1 style={{ fontSize: 'var(--text-3xl)', fontWeight: 800, letterSpacing: '-0.02em', lineHeight: 1.2 }}>
+          Welcome back,{' '}
+          <span className="text-gradient">{first}</span>
+        </h1>
+        <p style={{ color: 'var(--text-muted)', marginTop: 8, fontSize: 'var(--text-sm)' }}>
+          Your campus hub — everything in one place.
+        </p>
+      </div>
 
-          <div style={{ position:'relative', zIndex:1, display:'flex', alignItems:'center', justifyContent:'space-between', flexWrap:'wrap', gap:'var(--space-6)' }}>
+      {/* ── Bento Grid ─────────────────────────────────────────────────────── */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gridTemplateRows: 'auto', gap: 16 }}>
+
+        {/* ── Lost & Found — wide card ── */}
+        <BentoCard
+          style={{ gridColumn: 'span 2' }}
+          gradient="linear-gradient(135deg, rgba(244,63,94,0.12) 0%, rgba(139,92,246,0.08) 100%)"
+          glow="rgba(244,63,94,0.10)"
+          onClick={() => navigate('/lostfound')}
+        >
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
             <div>
-              <p style={{ color:'var(--text-muted)', fontSize:'var(--text-sm)', marginBottom:'var(--space-2)' }}>
-                {greeting} 👋
-              </p>
-              <h1 style={{ fontSize:'var(--text-3xl)', fontWeight:800, marginBottom:'var(--space-3)' }}>
-                Welcome back,{' '}
-                <span style={{
-                  background:'linear-gradient(135deg, var(--color-primary-light), var(--color-accent))',
-                  WebkitBackgroundClip:'text', WebkitTextFillColor:'transparent',
-                }}>
-                  {user?.name?.split(' ')[0]}
-                </span>
-              </h1>
-              <p style={{ color:'var(--text-secondary)', maxWidth:480, lineHeight:1.7 }}>
-                Your campus companion for Lost & Found, buying and selling, and AI-powered studying.
-                What would you like to do today?
+              <IconBadge color="#F43F5E" bg="rgba(244,63,94,0.15)">
+                <PackageSearch size={20} strokeWidth={1.8} />
+              </IconBadge>
+              <h2 style={{ fontSize: 'var(--text-xl)', fontWeight: 700, marginTop: 16, marginBottom: 6 }}>Lost & Found</h2>
+              <p style={{ color: 'var(--text-muted)', fontSize: 'var(--text-sm)', lineHeight: 1.6, maxWidth: 340 }}>
+                Report missing items or help others recover theirs. Post photos, set locations, and track status.
               </p>
             </div>
+            <ArrowUpRight size={20} style={{ color: 'var(--text-muted)', flexShrink: 0 }} />
+          </div>
+          <div style={{ display: 'flex', gap: 12, marginTop: 24, flexWrap: 'wrap' }}>
+            <StatChip icon={<Clock size={12} />} label="Open items" value="Active" color="#FB7185" />
+            <StatChip icon={<TrendingUp size={12} />} label="Categories" value="Electronics, Keys…" color="#C4B5FD" />
+          </div>
+          <div style={{ display: 'flex', gap: 10, marginTop: 20 }}>
+            <button className="btn btn-secondary btn-sm" onClick={e => { e.stopPropagation(); navigate('/lostfound'); }}>Browse</button>
+            <button className="btn btn-primary btn-sm" onClick={e => { e.stopPropagation(); navigate('/lostfound/create'); }}>
+              <Plus size={14} /> Report item
+            </button>
+          </div>
+        </BentoCard>
 
-            {/* Avatar */}
-            <div style={{
-              width:80, height:80, borderRadius:'50%',
-              background:'linear-gradient(135deg, var(--color-primary), var(--color-accent))',
-              display:'flex', alignItems:'center', justifyContent:'center',
-              fontSize:'2rem', fontWeight:800, color:'#fff',
-              boxShadow:'var(--shadow-glow)', flexShrink:0,
-            }}>
-              {user?.name?.charAt(0).toUpperCase()}
-            </div>
+        {/* ── AI Notes — tall card ── */}
+        <BentoCard
+          style={{ gridRow: 'span 2' }}
+          gradient="linear-gradient(135deg, rgba(139,92,246,0.15) 0%, rgba(6,182,212,0.08) 100%)"
+          glow="rgba(139,92,246,0.15)"
+          onClick={() => navigate('/notes')}
+        >
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+            <IconBadge color="#A78BFA" bg="rgba(139,92,246,0.18)">
+              <Sparkles size={20} strokeWidth={1.8} />
+            </IconBadge>
+            <ArrowUpRight size={20} style={{ color: 'var(--text-muted)' }} />
           </div>
 
-          {/* Quick stats row */}
-          {user?.college && (
-            <div style={{ position:'relative', zIndex:1, marginTop:'var(--space-6)', paddingTop:'var(--space-6)', borderTop:'1px solid var(--border-subtle)', display:'flex', gap:'var(--space-8)', flexWrap:'wrap' }}>
-              <Stat icon="🎓" label="College" value={user.college} />
-              <Stat icon="📧" label="Email"   value={user.email}   />
-              <Stat icon="🏷️" label="Role"    value={user.role}    />
-            </div>
-          )}
-        </div>
-
-        {/* ── Section title ──────────────────────────────────────────────────── */}
-        <div style={{ marginBottom:'var(--space-6)' }}>
-          <h2 style={{ fontSize:'var(--text-xl)', fontWeight:700 }}>Platform modules</h2>
-          <p style={{ color:'var(--text-secondary)', fontSize:'var(--text-sm)', marginTop:'var(--space-1)' }}>
-            Choose a module to get started
+          <h2 style={{ fontSize: 'var(--text-xl)', fontWeight: 700, marginTop: 16, marginBottom: 6 }}>AI Notes</h2>
+          <p style={{ color: 'var(--text-muted)', fontSize: 'var(--text-sm)', lineHeight: 1.6 }}>
+            Write, generate, and summarize study notes powered by AI.
           </p>
-        </div>
 
-        {/* ── Module cards ───────────────────────────────────────────────────── */}
-        <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(min(280px, 100%), 1fr))', gap:'var(--space-6)' }}>
-          {MODULES.map(mod => <ModuleCard key={mod.id} mod={mod} navigate={navigate} />)}
-        </div>
-
-        {/* ── Quick start tip ────────────────────────────────────────────────── */}
-        <div style={{
-          marginTop:'var(--space-10)',
-          padding:'var(--space-5) var(--space-6)',
-          background:'var(--bg-elevated)',
-          border:'1px solid var(--border-primary)',
-          borderRadius:'var(--radius-lg)',
-          display:'flex', alignItems:'center', gap:'var(--space-4)',
-        }}>
-          <span style={{ fontSize:'1.5rem' }}>💡</span>
-          <div>
-            <p style={{ fontWeight:600, marginBottom:2 }}>Quick tip — AI Notes</p>
-            <p style={{ color:'var(--text-secondary)', fontSize:'var(--text-sm)' }}>
-              Go to AI Notes, create a note, type any topic (e.g. "Photosynthesis"), and hit <strong>Generate</strong> to get structured study notes instantly.
-            </p>
+          <div style={{ marginTop: 20, display: 'flex', flexDirection: 'column', gap: 10 }}>
+            {['Generate study notes', 'Summarize content', 'Create quiz questions'].map((feat, i) => (
+              <div key={i} style={{
+                display: 'flex', alignItems: 'center', gap: 10,
+                padding: '10px 14px',
+                background: 'rgba(139,92,246,0.08)',
+                border: '1px solid rgba(139,92,246,0.15)',
+                borderRadius: 12,
+                fontSize: 'var(--text-xs)', fontWeight: 600, color: '#C4B5FD',
+              }}>
+                <Zap size={12} style={{ color: '#A78BFA', flexShrink: 0 }} />
+                {feat}
+              </div>
+            ))}
           </div>
-        </div>
+
+          <div style={{ display: 'flex', gap: 10, marginTop: 'auto', paddingTop: 24, flexWrap: 'wrap' }}>
+            <button className="btn btn-secondary btn-sm" onClick={e => { e.stopPropagation(); navigate('/notes'); }}>My notes</button>
+            <button className="btn btn-primary btn-sm" onClick={e => { e.stopPropagation(); navigate('/notes'); }}>
+              <Plus size={14} /> New note
+            </button>
+          </div>
+        </BentoCard>
+
+        {/* ── Marketplace ── */}
+        <BentoCard
+          style={{ gridColumn: 'span 2' }}
+          gradient="linear-gradient(135deg, rgba(59,130,246,0.12) 0%, rgba(6,182,212,0.08) 100%)"
+          glow="rgba(59,130,246,0.10)"
+          onClick={() => navigate('/marketplace')}
+        >
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+            <div>
+              <IconBadge color="#60A5FA" bg="rgba(59,130,246,0.15)">
+                <ShoppingBag size={20} strokeWidth={1.8} />
+              </IconBadge>
+              <h2 style={{ fontSize: 'var(--text-xl)', fontWeight: 700, marginTop: 16, marginBottom: 6 }}>Marketplace</h2>
+              <p style={{ color: 'var(--text-muted)', fontSize: 'var(--text-sm)', lineHeight: 1.6, maxWidth: 340 }}>
+                Buy and sell items with fellow students — textbooks, gadgets, furniture, and more.
+              </p>
+            </div>
+            <ArrowUpRight size={20} style={{ color: 'var(--text-muted)', flexShrink: 0 }} />
+          </div>
+          <div style={{ display: 'flex', gap: 12, marginTop: 20, flexWrap: 'wrap' }}>
+            <StatChip icon={<TrendingUp size={12} />} label="Conditions" value="New · Like-new · Good" color="#67E8F9" />
+          </div>
+          <div style={{ display: 'flex', gap: 10, marginTop: 20 }}>
+            <button className="btn btn-secondary btn-sm" onClick={e => { e.stopPropagation(); navigate('/marketplace'); }}>Browse</button>
+            <button className="btn btn-primary btn-sm" onClick={e => { e.stopPropagation(); navigate('/marketplace/create'); }}>
+              <Plus size={14} /> Sell item
+            </button>
+          </div>
+        </BentoCard>
 
       </div>
+
+      {/* ── Quick tip ──────────────────────────────────────────────────────── */}
+      <div style={{
+        marginTop: 20,
+        padding: '14px 20px',
+        background: 'rgba(139,92,246,0.08)',
+        border: '1px solid rgba(139,92,246,0.20)',
+        borderRadius: 'var(--radius-lg)',
+        display: 'flex', alignItems: 'center', gap: 14,
+      }}>
+        <Zap size={18} style={{ color: '#A78BFA', flexShrink: 0 }} />
+        <p style={{ fontSize: 'var(--text-sm)', color: 'var(--text-secondary)' }}>
+          <strong style={{ color: '#C4B5FD' }}>AI Notes tip:</strong> Go to AI Notes, create a note, type any topic and hit{' '}
+          <strong>Generate</strong> to get structured study content instantly.
+        </p>
+      </div>
+
+      {/* Responsive bento */}
+      <style>{`
+        @media (max-width: 768px) {
+          .bento-grid > * { grid-column: span 1 !important; grid-row: span 1 !important; }
+        }
+      `}</style>
     </div>
   );
 }
 
-// ── Module card component ──────────────────────────────────────────────────────
-function ModuleCard({ mod, navigate }) {
+/* ── Sub-components ───────────────────────────────────────────────────────── */
+function BentoCard({ children, style = {}, gradient, glow, onClick }) {
   return (
     <div
-      id={mod.id}
+      onClick={onClick}
       style={{
-        background: 'var(--bg-surface)',
-        border: '1px solid var(--border-subtle)',
-        borderRadius: 'var(--radius-xl)',
-        overflow: 'hidden',
-        transition: 'all var(--transition-base)',
-        cursor: 'pointer',
+        background:      `${gradient}, var(--bg-surface)`,
+        border:          '1px solid var(--border-glass)',
+        borderRadius:    'var(--radius-xl)',
+        padding:         24,
+        backdropFilter:  'var(--blur-md)',
+        boxShadow:       'var(--shadow-card)',
+        cursor:          'pointer',
+        transition:      'all var(--transition-base)',
+        display:         'flex',
+        flexDirection:   'column',
+        position:        'relative',
+        overflow:        'hidden',
+        ...style,
       }}
       onMouseEnter={e => {
-        e.currentTarget.style.borderColor = 'var(--border-primary)';
-        e.currentTarget.style.boxShadow   = `0 8px 32px ${mod.glow}`;
-        e.currentTarget.style.transform   = 'translateY(-4px)';
+        e.currentTarget.style.transform   = 'translateY(-3px)';
+        e.currentTarget.style.boxShadow   = `0 16px 48px rgba(0,0,0,0.55), 0 0 0 1px ${glow}`;
+        e.currentTarget.style.borderColor = 'rgba(255,255,255,0.12)';
       }}
       onMouseLeave={e => {
-        e.currentTarget.style.borderColor = 'var(--border-subtle)';
-        e.currentTarget.style.boxShadow   = 'none';
         e.currentTarget.style.transform   = 'translateY(0)';
+        e.currentTarget.style.boxShadow   = 'var(--shadow-card)';
+        e.currentTarget.style.borderColor = 'var(--border-glass)';
       }}
-      onClick={() => navigate(mod.path)}
     >
-      {/* Color band */}
-      <div style={{ height:4, background:mod.gradient }} />
-
-      <div style={{ padding:'var(--space-6)' }}>
-        {/* Icon + title */}
-        <div style={{ display:'flex', alignItems:'center', gap:'var(--space-3)', marginBottom:'var(--space-4)' }}>
-          <div style={{
-            width:48, height:48, borderRadius:'var(--radius-md)',
-            background:mod.glow, display:'flex', alignItems:'center',
-            justifyContent:'center', fontSize:'1.5rem',
-          }}>
-            {mod.emoji}
-          </div>
-          <h3 style={{ fontSize:'var(--text-xl)', fontWeight:700 }}>{mod.title}</h3>
-        </div>
-
-        {/* Description */}
-        <p style={{ color:'var(--text-secondary)', fontSize:'var(--text-sm)', lineHeight:1.7, marginBottom:'var(--space-5)' }}>
-          {mod.description}
-        </p>
-
-        {/* Stats */}
-        <div style={{ display:'flex', flexDirection:'column', gap:'var(--space-2)', marginBottom:'var(--space-6)' }}>
-          {mod.stats.map(s => (
-            <div key={s.label} style={{ display:'flex', justifyContent:'space-between', fontSize:'var(--text-xs)' }}>
-              <span style={{ color:'var(--text-muted)' }}>{s.label}</span>
-              <span style={{ color:'var(--text-secondary)', fontWeight:500 }}>{s.value}</span>
-            </div>
-          ))}
-        </div>
-
-        {/* Action buttons */}
-        <div style={{ display:'flex', gap:'var(--space-3)', flexWrap:'wrap' }}>
-          {mod.actions.map(a => (
-            <button
-              key={a.label}
-              onClick={(e) => { e.stopPropagation(); navigate(a.path); }}
-              className={`btn btn-sm ${a.primary ? 'btn-primary' : 'btn-outline'}`}
-              style={{ flex:1 }}
-            >
-              {a.label}
-            </button>
-          ))}
-        </div>
-      </div>
+      {/* Inner shine */}
+      <div style={{
+        position: 'absolute', inset: 0, borderRadius: 'inherit',
+        background: 'linear-gradient(135deg, rgba(255,255,255,0.04) 0%, transparent 50%)',
+        pointerEvents: 'none',
+      }} />
+      {children}
     </div>
   );
 }
 
-// ── Stat pill ─────────────────────────────────────────────────────────────────
-const Stat = ({ icon, label, value }) => (
-  <div style={{ display:'flex', alignItems:'center', gap:'var(--space-2)' }}>
-    <span>{icon}</span>
-    <div>
-      <p style={{ fontSize:'var(--text-xs)', color:'var(--text-muted)', margin:0 }}>{label}</p>
-      <p style={{ fontSize:'var(--text-sm)', fontWeight:600, margin:0, textTransform:'capitalize' }}>{value}</p>
+function IconBadge({ children, color, bg }) {
+  return (
+    <div style={{
+      width: 44, height: 44, borderRadius: 14,
+      background: bg,
+      border: `1px solid ${color}33`,
+      display: 'flex', alignItems: 'center', justifyContent: 'center',
+      color,
+      boxShadow: `0 0 16px ${color}20`,
+    }}>
+      {children}
     </div>
-  </div>
-);
+  );
+}
+
+function StatChip({ icon, label, value, color }) {
+  return (
+    <div style={{
+      display: 'flex', alignItems: 'center', gap: 6,
+      padding: '6px 12px',
+      background: `${color}12`,
+      border: `1px solid ${color}25`,
+      borderRadius: 'var(--radius-pill)',
+      fontSize: 'var(--text-xs)', fontWeight: 600, color,
+    }}>
+      {icon}
+      <span style={{ color: 'var(--text-muted)', fontWeight: 400 }}>{label}:</span> {value}
+    </div>
+  );
+}

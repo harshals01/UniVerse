@@ -9,6 +9,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
+import { Plus } from 'lucide-react';
 import { lostFoundApi } from '../api/lostFoundApi.js';
 import ItemCard from '../components/lostfound/ItemCard.jsx';
 import ItemFilter from '../components/lostfound/ItemFilter.jsx';
@@ -57,46 +58,21 @@ export default function LostFound() {
   useEffect(() => { fetchItems(DEFAULT_FILTERS, 1); }, [fetchItems]);
 
   return (
-    <div style={{ padding: 'var(--space-8) 0 var(--space-16)', minHeight: '100vh' }}>
+    <div className="page">
       <div className="container">
 
-        {/* ── Page header ─────────────────────────────────────────────────────── */}
-        <div style={{
-          display:        'flex',
-          alignItems:     'flex-start',
-          justifyContent: 'space-between',
-          marginBottom:   'var(--space-8)',
-          flexWrap:       'wrap',
-          gap:            'var(--space-4)',
-        }}>
+        {/* ── Page header ── */}
+        <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 28, flexWrap: 'wrap', gap: 16 }}>
           <div>
-            <h1 style={{ fontSize: 'var(--text-3xl)', fontWeight: 800, letterSpacing: '-0.02em' }}>
-              Lost & Found
-            </h1>
-            <p style={{ color: 'var(--text-secondary)', marginTop: 'var(--space-1)', fontSize: 'var(--text-sm)' }}>
-              Report lost items or help others recover what they've found.
-            </p>
+            <h1 style={{ fontSize: 'var(--text-3xl)', fontWeight: 800, letterSpacing: '-0.02em' }}>Lost & Found</h1>
+            <p style={{ color: 'var(--text-muted)', marginTop: 6, fontSize: 'var(--text-sm)' }}>Report lost items or help others recover what they've found.</p>
           </div>
-
           <button
             id="create-lostfound-btn"
             onClick={() => navigate('/lostfound/create')}
-            style={{
-              padding:      'var(--space-3) var(--space-6)',
-              borderRadius: 'var(--radius-pill)',
-              background:   'var(--color-primary)',
-              color:        '#fff',
-              fontWeight:   700,
-              fontSize:     'var(--text-sm)',
-              border:       'none',
-              cursor:       'pointer',
-              transition:   'background var(--transition-fast), box-shadow var(--transition-fast)',
-              whiteSpace:   'nowrap',
-            }}
-            onMouseEnter={e => { e.currentTarget.style.background = 'var(--color-primary-dark)'; e.currentTarget.style.boxShadow = '0 0 20px var(--color-primary-glow)'; }}
-            onMouseLeave={e => { e.currentTarget.style.background = 'var(--color-primary)'; e.currentTarget.style.boxShadow = 'none'; }}
+            className="btn btn-primary"
           >
-            + Report Item
+            <Plus size={15} /> Report Item
           </button>
         </div>
 
@@ -136,39 +112,14 @@ export default function LostFound() {
           </div>
         )}
 
-        {/* ── Pagination ──────────────────────────────────────────────────────── */}
+        {/* ── Pagination ── */}
         {pagination && pagination.totalPages > 1 && (
-          <div style={{
-            display:        'flex',
-            justifyContent: 'center',
-            alignItems:     'center',
-            gap:            'var(--space-3)',
-            marginTop:      'var(--space-12)',
-          }}>
-            <PageBtn
-              disabled={!pagination.hasPrev}
-              onClick={() => { const p = page - 1; setPage(p); fetchItems(filters, p); }}
-            >
-              ← Prev
-            </PageBtn>
-
-            <span style={{
-              padding:      '8px 20px',
-              background:   'var(--bg-surface)',
-              borderRadius: 'var(--radius-pill)',
-              color:        'var(--text-secondary)',
-              fontSize:     'var(--text-sm)',
-              fontWeight:   600,
-            }}>
+          <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 10, marginTop: 48 }}>
+            <PageBtn disabled={!pagination.hasPrev} onClick={() => { const p = page - 1; setPage(p); fetchItems(filters, p); }}>← Prev</PageBtn>
+            <span style={{ padding: '8px 20px', background: 'var(--bg-surface)', border: '1px solid var(--border-glass)', borderRadius: 'var(--radius-pill)', color: 'var(--text-secondary)', fontSize: 'var(--text-sm)', fontWeight: 600 }}>
               {pagination.page} / {pagination.totalPages}
             </span>
-
-            <PageBtn
-              disabled={!pagination.hasNext}
-              onClick={() => { const p = page + 1; setPage(p); fetchItems(filters, p); }}
-            >
-              Next →
-            </PageBtn>
+            <PageBtn disabled={!pagination.hasNext} onClick={() => { const p = page + 1; setPage(p); fetchItems(filters, p); }}>Next →</PageBtn>
           </div>
         )}
       </div>
@@ -179,22 +130,9 @@ export default function LostFound() {
 /* ── Pagination button ────────────────────────────────────────────────────────  */
 const PageBtn = ({ children, disabled, onClick }) => (
   <button
-    disabled={disabled}
-    onClick={onClick}
-    style={{
-      padding:      '8px 20px',
-      borderRadius: 'var(--radius-pill)',
-      background:   'var(--bg-surface)',
-      color:        disabled ? 'var(--text-muted)' : 'var(--text-primary)',
-      border:       'none',
-      fontWeight:   600,
-      fontSize:     'var(--text-sm)',
-      cursor:       disabled ? 'not-allowed' : 'pointer',
-      opacity:      disabled ? 0.4 : 1,
-      transition:   'background var(--transition-fast)',
-    }}
-    onMouseEnter={e => { if (!disabled) e.currentTarget.style.background = 'var(--bg-elevated)'; }}
-    onMouseLeave={e => { e.currentTarget.style.background = 'var(--bg-surface)'; }}
+    disabled={disabled} onClick={onClick}
+    className="btn btn-secondary btn-sm"
+    style={{ opacity: disabled ? 0.4 : 1, cursor: disabled ? 'not-allowed' : 'pointer' }}
   >
     {children}
   </button>

@@ -106,8 +106,8 @@ const aiService = {
     }
 
     // ── Check for real API key ────────────────────────────────────────────────
-    if (process.env.OPENAI_API_KEY) {
-      return await aiService._openAIGenerate(prompt, options);
+    if (process.env.GEMINI_API_KEY) {
+      return await aiService._geminiGenerate(prompt, { mode });
     }
 
     // ── Fall through to mock ──────────────────────────────────────────────────
@@ -130,14 +130,30 @@ const aiService = {
     };
   },
 
-  // ── OpenAI provider (active when OPENAI_API_KEY is set) ───────────────────
-  // Stub: Replace body when adding real OpenAI support
-  _openAIGenerate: async (prompt, { mode }) => {
-    // const { OpenAI } = await import('openai');
-    // const client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
-    // const response = await client.chat.completions.create({ ... });
-    // return { content: response.choices[0].message.content, ... };
-    throw new Error('OpenAI integration not yet configured');
+  // ── Google Gemini provider (active when GEMINI_API_KEY is set) ──────────────
+  _geminiGenerate: async (prompt, { mode }) => {
+    const { GoogleGenerativeAI } = await import('@google/generative-ai');
+    const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+    const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' }); // free tier
+
+    // Build a mode-specific system instruction inline in the prompt
+    const systemMessages = {
+      notes:     'You are an expert tutor. Create clear, highly structured Markdown study notes.',
+      summarize: 'Summarize the following content clearly and concisely using bullet points.',
+      quiz:      'Create a short practice quiz with Q&A pairs based on the following topic.',
+    };
+    const instruction = systemMessages[mode] ?? systemMessages.notes;
+    const fullPrompt  = `${instruction}\n\n${prompt}`;
+
+    const result  = await model.generateContent(fullPrompt);
+    const content = result.response.text();
+
+    return {
+      content,
+      tokensUsed: result.response.usageMetadata?.totalTokenCount ?? 0,
+      provider:   'gemini',
+      mode,
+    };
   },
 };
 

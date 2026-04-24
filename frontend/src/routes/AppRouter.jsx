@@ -1,6 +1,6 @@
 /**
  * routes/AppRouter.jsx
- * Complete route map for all UniVerse modules.
+ * Complete route map — sidebar layout with floating top bar.
  */
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext.jsx';
@@ -31,18 +31,30 @@ import Notes from '../pages/Notes.jsx';
 const MainLayout = ({ children }) => (
   <>
     <Navbar />
-    {/* Top bar is 60px tall — push content below it. No left margin needed. */}
+    {/*
+      Sidebar is 260px wide + 16px from left edge + 16px gap = 292px offset.
+      Top bar is 56px tall + 16px from top + 16px gap = 88px offset.
+      On mobile (<900px) sidebar is hidden, top bar spans full width.
+    */}
     <main style={{
-      marginTop:  'var(--topbar-height, 60px)',
-      minHeight:  'calc(100vh - var(--topbar-height, 60px))',
-      background: 'var(--bg-base)',
-      overflowX:  'hidden',
+      marginLeft:  'calc(var(--sidebar-width, 260px) + 32px)',
+      marginTop:   'calc(56px + 32px)',   /* topbar height + top offset + gap */
+      minHeight:   'calc(100vh - 88px)',
+      background:  'transparent',
+      overflowX:   'hidden',
+      transition:  'margin-left var(--transition-base)',
     }}>
       {children}
     </main>
+
+    {/* Mobile: sidebar hidden so remove margin */}
+    <style>{`
+      @media (max-width: 900px) {
+        main { margin-left: 0 !important; }
+      }
+    `}</style>
   </>
 );
-
 
 // ── Guard: redirect logged-in users away from auth pages ─────────────────────
 const PublicOnlyRoute = ({ children }) => {
@@ -51,7 +63,7 @@ const PublicOnlyRoute = ({ children }) => {
   return isAuth ? <Navigate to="/" replace /> : children;
 };
 
-// ── Wrap a page in Navbar layout + private guard ──────────────────────────────
+// ── Wrap a page in layout + private guard ─────────────────────────────────────
 const Page = ({ element }) => (
   <PrivateRoute>
     <MainLayout>{element}</MainLayout>
@@ -61,24 +73,24 @@ const Page = ({ element }) => (
 export default function AppRouter() {
   return (
     <Routes>
-      {/* ── Public auth routes ────────────────────────────────────────────── */}
+      {/* ── Public auth routes ─────────────────────────────────────────────── */}
       <Route path="/login"    element={<PublicOnlyRoute><Login    /></PublicOnlyRoute>} />
       <Route path="/register" element={<PublicOnlyRoute><Register /></PublicOnlyRoute>} />
 
-      {/* ── Dashboard ─────────────────────────────────────────────────────── */}
+      {/* ── Dashboard ──────────────────────────────────────────────────────── */}
       <Route path="/"  element={<Page element={<Home />} />} />
 
-      {/* ── Lost & Found ──────────────────────────────────────────────────── */}
+      {/* ── Lost & Found ───────────────────────────────────────────────────── */}
       <Route path="/lostfound"         element={<Page element={<LostFound />}       />} />
       <Route path="/lostfound/create"  element={<Page element={<LostFoundCreate />} />} />
       <Route path="/lostfound/:id"     element={<Page element={<LostFoundDetail />} />} />
 
-      {/* ── Marketplace ───────────────────────────────────────────────────── */}
+      {/* ── Marketplace ────────────────────────────────────────────────────── */}
       <Route path="/marketplace"         element={<Page element={<Marketplace />}       />} />
       <Route path="/marketplace/create"  element={<Page element={<MarketplaceCreate />} />} />
       <Route path="/marketplace/:id"     element={<Page element={<MarketplaceDetail />} />} />
 
-      {/* ── AI Notes ──────────────────────────────────────────────────────── */}
+      {/* ── AI Notes ───────────────────────────────────────────────────────── */}
       <Route path="/notes" element={<Page element={<Notes />} />} />
 
       {/* Catch-all */}
