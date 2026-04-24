@@ -22,11 +22,13 @@ export default function Navbar() {
   const { user, logout, isAuth } = useAuth();
   const navigate = useNavigate();
   const [menuOpen, setMenuOpen] = useState(false);
+  const [dropdownOpen, setDropdownOpen] = useState(false);
 
   const handleLogout = () => {
     logout();
     navigate('/login');
     setMenuOpen(false);
+    setDropdownOpen(false);
   };
 
   if (!isAuth) return null;
@@ -51,7 +53,7 @@ export default function Navbar() {
           </span>
         </NavLink>
 
-        {/* Desktop nav links */}
+        {/* Desktop nav links — centered */}
         <nav className="topbar-links no-tap-min">
           {NAV_LINKS.map(link => (
             <NavLink
@@ -92,52 +94,93 @@ export default function Navbar() {
           ))}
         </nav>
 
-        {/* Right: user avatar + logout */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-3)', marginLeft: 'auto' }}>
+        {/* Right: user avatar dropdown */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-3)' }}>
           {user && (
-            <>
-              <NavLink
-                to="/profile"
+            <div style={{ position: 'relative' }}>
+              {/* Avatar chip — click to toggle dropdown */}
+              <button
                 id="nav-profile"
-                title={user.name}
-                className="no-tap-min"
-                style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 8 }}
+                onClick={() => setDropdownOpen(o => !o)}
+                aria-label="Account menu"
+                style={{
+                  display: 'flex', alignItems: 'center', gap: 8,
+                  background: 'var(--bg-elevated)',
+                  border: '1px solid var(--border-subtle)',
+                  borderRadius: 'var(--radius-pill)',
+                  padding: '4px 10px 4px 4px',
+                  cursor: 'pointer',
+                  transition: 'border-color var(--transition-fast)',
+                }}
+                onMouseEnter={e => e.currentTarget.style.borderColor = 'var(--border-primary)'}
+                onMouseLeave={e => e.currentTarget.style.borderColor = 'var(--border-subtle)'}
               >
                 <div style={{
-                  width: 32, height: 32, borderRadius: '50%',
+                  width: 28, height: 28, borderRadius: '50%',
                   background: 'var(--color-primary)',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  fontSize: '0.85rem', fontWeight: 700, color: '#fff', flexShrink: 0,
+                  fontSize: '0.8rem', fontWeight: 700, color: '#fff', flexShrink: 0,
                 }}>
                   {user.name?.charAt(0).toUpperCase()}
                 </div>
-                <span className="topbar-username">
-                  {user.name?.split(' ')[0]}
+                <span className="topbar-username">{user.name?.split(' ')[0]}</span>
+                <span style={{ fontSize: '0.6rem', color: 'var(--text-muted)', marginLeft: 2 }}>
+                  {dropdownOpen ? '▲' : '▼'}
                 </span>
-              </NavLink>
-
-              <button
-                id="nav-logout"
-                onClick={handleLogout}
-                title="Sign out"
-                className="icon-btn no-tap-min"
-                style={{
-                  background: 'var(--bg-elevated)',
-                  border: 'none',
-                  cursor: 'pointer',
-                  color: 'var(--text-muted)',
-                  fontSize: '0.9rem',
-                  padding: '7px 10px',
-                  borderRadius: 'var(--radius-pill)',
-                  transition: 'background var(--transition-fast), color var(--transition-fast)',
-                }}
-                onMouseEnter={e => { e.currentTarget.style.color = '#f87171'; e.currentTarget.style.background = 'rgba(239,68,68,0.12)'; }}
-                onMouseLeave={e => { e.currentTarget.style.color = 'var(--text-muted)'; e.currentTarget.style.background = 'var(--bg-elevated)'; }}
-                aria-label="Sign out"
-              >
-                ⏏
               </button>
-            </>
+
+              {/* Dropdown menu */}
+              {dropdownOpen && (
+                <>
+                  {/* Click-away backdrop */}
+                  <div
+                    style={{ position: 'fixed', inset: 0, zIndex: 99 }}
+                    onClick={() => setDropdownOpen(false)}
+                  />
+                  <div className="nav-dropdown">
+                    <NavLink
+                      to="/profile"
+                      onClick={() => setDropdownOpen(false)}
+                      style={{
+                        display: 'flex', alignItems: 'center', gap: 10,
+                        padding: 'var(--space-3) var(--space-4)',
+                        textDecoration: 'none',
+                        color: 'var(--text-secondary)',
+                        fontWeight: 600, fontSize: 'var(--text-sm)',
+                        borderRadius: 'var(--radius-md)',
+                        transition: 'background var(--transition-fast)',
+                      }}
+                      onMouseEnter={e => e.currentTarget.style.background = 'var(--bg-elevated)'}
+                      onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
+                    >
+                      <span>👤</span> Profile
+                    </NavLink>
+
+                    <div style={{ height: 1, background: 'var(--border-subtle)', margin: 'var(--space-1) 0' }} />
+
+                    <button
+                      id="nav-logout"
+                      onClick={handleLogout}
+                      style={{
+                        display: 'flex', alignItems: 'center', gap: 10,
+                        padding: 'var(--space-3) var(--space-4)',
+                        background: 'transparent',
+                        border: 'none', cursor: 'pointer',
+                        color: '#f87171',
+                        fontWeight: 600, fontSize: 'var(--text-sm)',
+                        borderRadius: 'var(--radius-md)',
+                        width: '100%', textAlign: 'left',
+                        transition: 'background var(--transition-fast)',
+                      }}
+                      onMouseEnter={e => e.currentTarget.style.background = 'rgba(239,68,68,0.10)'}
+                      onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
+                    >
+                      <span>⏏</span> Sign out
+                    </button>
+                  </div>
+                </>
+              )}
+            </div>
           )}
 
           {/* Mobile hamburger */}
@@ -253,12 +296,28 @@ export default function Navbar() {
           box-shadow:      0 1px 0 var(--border-subtle);
         }
 
-        /* Desktop nav links container */
+        /* Desktop nav links — centered */
         .topbar-links {
-          display:     flex;
-          align-items: center;
-          gap:         var(--space-1);
-          margin-left: var(--space-6);
+          display:         flex;
+          align-items:     center;
+          justify-content: center;
+          gap:             var(--space-1);
+          flex:            1;
+        }
+
+        /* Avatar dropdown panel */
+        .nav-dropdown {
+          position:      absolute;
+          top:           calc(100% + 8px);
+          right:         0;
+          min-width:     160px;
+          background:    var(--bg-surface);
+          border:        1px solid var(--border-subtle);
+          border-radius: var(--radius-lg);
+          box-shadow:    var(--shadow-lg);
+          padding:       var(--space-2);
+          z-index:       100;
+          animation:     fadeIn 0.12s ease both;
         }
 
         /* User name label — hidden below 900px */
