@@ -106,8 +106,8 @@ const aiService = {
     }
 
     // ── Check for real API key ────────────────────────────────────────────────
-    if (process.env.GEMINI_API_KEY) {
-      return await aiService._geminiGenerate(prompt, { mode });
+    if (process.env.GROQ_API_KEY) {
+      return await aiService._groqGenerate(prompt, { mode });
     }
 
     // ── Fall through to mock ──────────────────────────────────────────────────
@@ -120,7 +120,7 @@ const aiService = {
     await new Promise((r) => setTimeout(r, delay));
 
     const template = MOCK_RESPONSES[mode] ?? MOCK_RESPONSES.notes;
-    const content  = template(prompt.trim());
+    const content = template(prompt.trim());
 
     return {
       content,
@@ -130,28 +130,36 @@ const aiService = {
     };
   },
 
-  // ── Google Gemini provider (active when GEMINI_API_KEY is set) ──────────────
-  _geminiGenerate: async (prompt, { mode }) => {
-    const { GoogleGenerativeAI } = await import('@google/generative-ai');
-    const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-    const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' }); // free tier
+  // ── Groq provider (active when GROQ_API_KEY is set) ─────────────────────────
+  _groqGenerate: async (prompt, { mode }) => {
+    const Groq = (await import('groq-sdk')).default;
+    const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
 
-    // Build a mode-specific system instruction inline in the prompt
-    const systemMessages = {
-      notes:     'You are an expert tutor. Create clear, highly structured Markdown study notes.',
-      summarize: 'Summarize the following content clearly and concisely using bullet points.',
-      quiz:      'Create a short practice quiz with Q&A pairs based on the following topic.',
-    };
-    const instruction = systemMessages[mode] ?? systemMessages.notes;
-    const fullPrompt  = `${instruction}\n\n${prompt}`;
+    // Customize the system prompt based on the mode
+    let systemMessage = 'You are a helpful AI assistant.';
+    if (mode === 'notes') {
+      systemMessage = 'You are an expert tutor. Create clear, highly structured markdown study notes based on the prompt.';
+    } else if (mode === 'summarize') {
+      systemMessage = 'Summarize the provided content clearly and concisely using bullet points.';
+    } else if (mode === 'quiz') {
+      systemMessage = 'Create a short practice quiz with answers based on the provided topic.';
+    }
 
-    const result  = await model.generateContent(fullPrompt);
-    const content = result.response.text();
+    const response = await groq.chat.completions.create({
+      messages: [
+        { role: 'system', content: systemMessage },
+        { role: 'user', content: prompt }
+      ],
+      model: process.env.GROQ_MODEL || 'llama-3.3-70b-versatile',
+      temperature: 0.7,
+    });
+
+    const content = response.choices[0]?.message?.content || '';
 
     return {
       content,
-      tokensUsed: result.response.usageMetadata?.totalTokenCount ?? 0,
-      provider:   'gemini',
+      tokensUsed: response.usage?.total_tokens || 0,
+      provider: 'groq',
       mode,
     };
   },
