@@ -15,6 +15,7 @@ import toast from 'react-hot-toast';
 import { authApi } from '../api/authApi.js';
 import { useAuth } from '../context/AuthContext.jsx';
 import Spinner from '../components/common/Spinner.jsx';
+import Logo from '../components/common/Logo.jsx';
 import { useFormValidation, rules } from '../hooks/useFormValidation.js';
 
 export default function Login() {
@@ -70,16 +71,15 @@ export default function Login() {
 
         <div style={{ position: 'relative', zIndex: 1, textAlign: 'center', maxWidth: 360 }}>
           {/* Brand mark */}
-          <div style={{
-            width: 64, height: 64, borderRadius: 18,
-            background: 'linear-gradient(135deg, #8B5CF6, #6366F1)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            fontSize: '1.8rem', color: '#fff', fontWeight: 800,
-            margin: '0 auto var(--space-6)',
-            boxShadow: '0 8px 32px rgba(139,92,246,0.40)',
-          }}>
-            U
-          </div>
+          <Logo 
+            size={64} 
+            style={{ 
+              color: 'var(--color-primary)', 
+              margin: '0 auto var(--space-6)', 
+              filter: 'drop-shadow(0 0 16px rgba(99,102,241,0.6))',
+              display: 'block'
+            }} 
+          />
 
           <h2 style={{ fontSize: 'var(--text-3xl)', fontWeight: 800, marginBottom: 'var(--space-3)', letterSpacing: '-0.02em' }}>
             UniVerse

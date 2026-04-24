@@ -11,6 +11,7 @@ import {
   Sparkles, UserCircle, LogOut, Bell, X, Menu,
   ChevronDown,
 } from 'lucide-react';
+import Logo from './Logo';
 
 const NAV_LINKS = [
   { to: '/',            label: 'Dashboard',   Icon: LayoutDashboard, id: 'nav-home'        },
@@ -45,7 +46,7 @@ export default function Navbar() {
       <aside className="uv-sidebar">
         {/* Logo */}
         <NavLink to="/" id="nav-logo" className="uv-sidebar-logo">
-          <div className="uv-logo-mark">U</div>
+          <Logo size={28} style={{ color: 'var(--color-primary)', filter: 'drop-shadow(0 0 8px rgba(99,102,241,0.5))' }} />
           <span className="uv-logo-text">UniVerse</span>
         </NavLink>
 
@@ -156,7 +157,7 @@ export default function Navbar() {
         <div className="uv-drawer-overlay" onClick={() => setDrawerOpen(false)}>
           <div className="uv-drawer animate-slide-left" onClick={e => e.stopPropagation()}>
             <div className="uv-drawer-header">
-              <div className="uv-logo-mark" style={{ width: 28, height: 28, fontSize: '0.8rem' }}>U</div>
+              <Logo size={28} style={{ color: 'var(--color-primary)' }} />
               <span style={{ fontWeight: 800, fontSize: 'var(--text-base)' }}>UniVerse</span>
               <button className="btn-icon" style={{ marginLeft: 'auto' }} onClick={() => setDrawerOpen(false)}>
                 <X size={16} />
