@@ -26,10 +26,10 @@ import connectDB from './config/db.js';
 import { notFound, errorHandler } from './middleware/errorMiddleware.js';
 
 // ── Route imports ────────────────────────────────────────────────────────────
-import authRoutes from './routes/authRoutes.js';        // ✅ live
-import lostFoundRoutes from './routes/lostFoundRoutes.js';   // ✅ live
-import marketplaceRoutes from './routes/marketplaceRoutes.js'; // ✅ live
-import notesRoutes from './routes/notesRoutes.js';       // ✅ live
+import authRoutes from './routes/authRoutes.js';
+import lostFoundRoutes from './routes/lostFoundRoutes.js';
+import marketplaceRoutes from './routes/marketplaceRoutes.js';
+import notesRoutes from './routes/notesRoutes.js';
 
 // ── ESM __dirname shim ────────────────────────────────────────────────────────
 const __filename = fileURLToPath(import.meta.url);
@@ -43,11 +43,21 @@ const app = express();
 
 // ── 3. Global Middleware ──────────────────────────────────────────────────────
 
-// CORS — whitelist the React dev server (and production domain later)
+// CORS — whitelist allowed origins (supports comma-separated list in CLIENT_URL)
+const allowedOrigins = env.CLIENT_URL
+  .split(',')
+  .map((o) => o.trim())
+  .filter(Boolean);
+
 app.use(
   cors({
-    origin: [env.CLIENT_URL],
-    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
+    origin: (origin, callback) => {
+      // Allow requests with no origin (e.g. curl, Postman, server-to-server)
+      if (!origin) return callback(null, true);
+      if (allowedOrigins.includes(origin)) return callback(null, true);
+      callback(new Error(`CORS: origin '${origin}' is not allowed`));
+    },
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],
     credentials: true,
   })
