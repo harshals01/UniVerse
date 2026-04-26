@@ -22,9 +22,6 @@ UniVerse solves modern campus friction by providing these key integrated feature
 *   **File Uploads & Media Support**: Integrated handling for uploading images of items and documents securely.
 *   **Performance Improvements**: Optimized database queries and caching mechanisms for lightning-fast page loads and API responses.
 
-## 📸 Login Screen
-
-![Login Screen](./screenshots/login-screen.png)
 
 ## 🚀 Getting Started
 
