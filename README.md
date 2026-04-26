@@ -6,16 +6,25 @@
 <img width="1915" height="862" alt="image" src="https://github.com/user-attachments/assets/7e912bfd-0a5e-4618-9e50-66af99240c37" />
 
 
-**UniVerse** is a modular, full-stack platform designed to connect students and streamline campus life. By consolidating essential tools into one cohesive application, UniVerse aims to bring a safer, smarter, and more engaging digital experience to university environments.
+**UniVerse** is a modular, full-stack platform designed to connect students and streamline campus life. Featuring a newly enhanced, responsive modern UI and significant backend performance improvements, UniVerse consolidates essential tools into one cohesive application. It brings a safer, smarter, and more engaging digital experience to university environments.
 
-## 🌟 Why UniVerse is Useful
+## 🌟 Features
 
 UniVerse solves modern campus friction by providing these key integrated features:
 
+*   **Secure User Authentication**: Robust JWT authentication combined with encrypted data storage for secure, localized access.
+*   **Responsive Modern UI**: A beautiful, glassmorphism-inspired aesthetic with dark mode and smooth animations for a seamless user experience.
+*   **Dashboard & User Management**: Comprehensive profile and listing management allowing students to easily track their marketplace and lost & found activities.
+*   **API Integration**: Dynamic and modular full-stack architecture with reliable API endpoints handling requests efficiently.
 *   **Lost & Found System**: A centralized hub to report missing items or list found belongings, drastically improving the chances of recovering lost property on campus.
 *   **Student Marketplace**: A secure, peer-to-peer marketplace where students can buy, sell, or trade textbooks, electronics, and dorm essentials with trusted classmates.
-*   **AI-Powered Notes Module**: Work smarter, not harder. Upload, organize, and analyze lecture notes using built-in AI capabilities to instantly generate summaries and smart study guides.
-*   **Secure & Localized**: Built specifically for campus networks and student verification, establishing a secure environment using robust JWT authentication.
+*   **AI-Powered Notes Module**: Work smarter, not harder. Upload, organize, and analyze lecture notes using built-in Groq and Gemini AI capabilities to instantly generate summaries and smart study guides.
+*   **File Uploads & Media Support**: Integrated handling for uploading images of items and documents securely.
+*   **Performance Improvements**: Optimized database queries and caching mechanisms for lightning-fast page loads and API responses.
+
+## 📸 Login Screen
+
+![Login Screen](./screenshots/login-screen.png)
 
 ## 🚀 Getting Started
 
@@ -53,6 +62,9 @@ NODE_ENV=development
 PORT=5000
 MONGO_URI=your_mongodb_connection_string
 JWT_SECRET=your_jwt_secret_key
+GROQ_API_KEY=your_groq_api_key
+GROQ_MODEL=llama-3.3-70b-versatile
+GEMINI_API_KEY=your_gemini_api_key
 MAX_FILE_SIZE=5242880
 UPLOAD_PATH=./uploads
 CLIENT_URL=http://localhost:5173
