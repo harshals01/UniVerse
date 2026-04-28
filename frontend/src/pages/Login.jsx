@@ -118,7 +118,15 @@ export default function Login() {
         alignItems:     'center',
         justifyContent: 'center',
         padding:        'var(--space-8) var(--space-6)',
+        position:       'relative',
       }}>
+        {/* Floating Nebula Background */}
+        <div className="nebula-container">
+          <div className="nebula-blob blob-1"></div>
+          <div className="nebula-blob blob-2"></div>
+          <div className="nebula-blob blob-3"></div>
+        </div>
+
         <div style={{
           width:          '100%',
           maxWidth:       440,
@@ -129,6 +137,7 @@ export default function Login() {
           boxShadow:      'var(--shadow-lg), 0 0 60px rgba(139,92,246,0.08)',
           backdropFilter: 'var(--blur-md)',
           position:       'relative',
+          zIndex:         1,
           overflow:       'hidden',
         }}>
           {/* inner shine */}
@@ -242,6 +251,62 @@ export default function Login() {
           position: relative; overflow: hidden;
         }
         @media (max-width: 768px) { .auth-art-panel { display: none; } }
+
+        /* Floating Nebula Effects */
+        .nebula-container {
+          position: absolute;
+          inset: 0;
+          overflow: hidden;
+          pointer-events: none;
+          z-index: 0;
+        }
+        .nebula-blob {
+          position: absolute;
+          border-radius: 50%;
+          filter: blur(90px);
+          opacity: 0.6;
+          animation: float 20s infinite ease-in-out alternate;
+        }
+        .blob-1 {
+          width: 50vw;
+          height: 50vw;
+          max-width: 600px;
+          max-height: 600px;
+          background: rgba(139, 92, 246, 0.35); /* Purple */
+          top: -10%;
+          left: -10%;
+          animation-delay: 0s;
+        }
+        .blob-2 {
+          width: 40vw;
+          height: 40vw;
+          max-width: 500px;
+          max-height: 500px;
+          background: rgba(6, 182, 212, 0.3); /* Cyan */
+          bottom: -10%;
+          right: -10%;
+          animation-duration: 25s;
+          animation-delay: -5s;
+        }
+        .blob-3 {
+          width: 35vw;
+          height: 35vw;
+          max-width: 400px;
+          max-height: 400px;
+          background: rgba(236, 72, 153, 0.25); /* Pink */
+          top: 30%;
+          left: 50%;
+          transform: translateX(-50%);
+          animation-duration: 22s;
+          animation-delay: -10s;
+        }
+
+        @keyframes float {
+          0% { transform: translate(0, 0) scale(1); }
+          33% { transform: translate(5%, -5%) scale(1.1); }
+          66% { transform: translate(-3%, 4%) scale(0.9); }
+          100% { transform: translate(6%, 6%) scale(1.05); }
+        }
       `}</style>
     </div>
   );
