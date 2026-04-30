@@ -83,10 +83,10 @@ app.get('/api/health', (req, res) => {
 });
 
 // ── 5. Feature Routers ────────────────────────────────────────────────────────
-app.use('/api/auth', authRoutes);              // ✅ Register / Login / Me
-app.use('/api/lostfound', lostFoundRoutes);         // ✅ Lost & Found CRUD
-app.use('/api/marketplace', marketplaceRoutes);       // ✅ Marketplace CRUD
-app.use('/api/notes', notesRoutes);             // ✅ AI Notes CRUD
+app.use('/api/auth', authRoutes);
+app.use('/api/lostfound', lostFoundRoutes);
+app.use('/api/marketplace', marketplaceRoutes);
+app.use('/api/notes', notesRoutes);
 
 // ── 6. Static File Serving ────────────────────────────────────────────────────
 // Uploaded images / PDFs accessible at: /uploads/<filename>

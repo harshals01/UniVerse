@@ -1,12 +1,6 @@
 /**
  * pages/Login.jsx
- * ─────────────────────────────────────────────────────────────────────────────
- * Login page — Dark Modular theme.
- * Split-screen on desktop (decorative left panel + form right),
- * focused single-card on mobile.
- *
- * All form validation, state hooks, and API logic are unchanged.
- * ─────────────────────────────────────────────────────────────────────────────
+ * Login page
  */
 
 import { useState } from 'react';
@@ -19,17 +13,17 @@ import Logo from '../components/common/Logo.jsx';
 import { useFormValidation, rules } from '../hooks/useFormValidation.js';
 
 export default function Login() {
-  const { login }    = useAuth();
-  const navigate     = useNavigate();
-  const location     = useLocation();
-  const redirectTo   = location.state?.from?.pathname || '/';
+  const { login } = useAuth();
+  const navigate = useNavigate();
+  const location = useLocation();
+  const redirectTo = location.state?.from?.pathname || '/';
 
-  const [form, setForm]        = useState({ email: '', password: '' });
+  const [form, setForm] = useState({ email: '', password: '' });
   const [showPass, setShowPass] = useState(false);
-  const [loading,  setLoading] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const { errors, validate, clearError } = useFormValidation({
-    email:    [rules.required('Email is required'), rules.email()],
+    email: [rules.required('Email is required'), rules.email()],
     password: [rules.required('Password is required')],
   });
 
@@ -57,12 +51,11 @@ export default function Login() {
 
   return (
     <div style={{
-      minHeight:       '100vh',
-      display:         'flex',
-      background:      'var(--bg-base)',
+      minHeight: '100vh',
+      display: 'flex',
+      background: 'var(--bg-base)',
     }}>
 
-      {/* ── Left decorative panel (desktop only) ─────────────────────────────── */}
       <div className="auth-art-panel">
         {/* Ambient glows */}
         <div style={glow({ top: '10%', left: '15%', color: '#8B5CF6', size: 320 })} />
@@ -71,14 +64,14 @@ export default function Login() {
 
         <div style={{ position: 'relative', zIndex: 1, textAlign: 'center', maxWidth: 360 }}>
           {/* Brand mark */}
-          <Logo 
-            size={64} 
-            style={{ 
-              color: 'var(--color-primary)', 
-              margin: '0 auto var(--space-6)', 
+          <Logo
+            size={64}
+            style={{
+              color: 'var(--color-primary)',
+              margin: '0 auto var(--space-6)',
               filter: 'drop-shadow(0 0 16px rgba(99,102,241,0.6))',
               display: 'block'
-            }} 
+            }}
           />
 
           <h2 style={{ fontSize: 'var(--text-3xl)', fontWeight: 800, marginBottom: 'var(--space-3)', letterSpacing: '-0.02em' }}>
@@ -111,14 +104,13 @@ export default function Login() {
         </div>
       </div>
 
-      {/* ── Right: Login card ─────────────────────────────────────────────────── */}
       <div style={{
-        flex:           1,
-        display:        'flex',
-        alignItems:     'center',
+        flex: 1,
+        display: 'flex',
+        alignItems: 'center',
         justifyContent: 'center',
-        padding:        'var(--space-8) var(--space-6)',
-        position:       'relative',
+        padding: 'var(--space-8) var(--space-6)',
+        position: 'relative',
       }}>
         {/* Floating Nebula Background */}
         <div className="nebula-container">
@@ -128,26 +120,26 @@ export default function Login() {
         </div>
 
         <div style={{
-          width:          '100%',
-          maxWidth:       440,
-          background:     'rgba(18,22,34,0.80)',
-          border:         '1px solid var(--border-glass)',
-          borderRadius:   'var(--radius-xl)',
-          padding:        'var(--space-10) var(--space-8)',
-          boxShadow:      'var(--shadow-lg), 0 0 60px rgba(139,92,246,0.08)',
+          width: '100%',
+          maxWidth: 440,
+          background: 'rgba(18,22,34,0.80)',
+          border: '1px solid var(--border-glass)',
+          borderRadius: 'var(--radius-xl)',
+          padding: 'var(--space-10) var(--space-8)',
+          boxShadow: 'var(--shadow-lg), 0 0 60px rgba(139,92,246,0.08)',
           backdropFilter: 'var(--blur-md)',
-          position:       'relative',
-          zIndex:         1,
-          overflow:       'hidden',
+          position: 'relative',
+          zIndex: 1,
+          overflow: 'hidden',
         }}>
           {/* inner shine */}
-          <div style={{ position:'absolute',inset:0,borderRadius:'inherit',background:'linear-gradient(135deg,rgba(255,255,255,0.04) 0%,transparent 50%)',pointerEvents:'none' }} />
+          <div style={{ position: 'absolute', inset: 0, borderRadius: 'inherit', background: 'linear-gradient(135deg,rgba(255,255,255,0.04) 0%,transparent 50%)', pointerEvents: 'none' }} />
 
           {/* Header */}
           <div style={{ marginBottom: 'var(--space-8)' }}>
             <h1 style={{
-              fontSize:    'var(--text-3xl)',
-              fontWeight:  800,
+              fontSize: 'var(--text-3xl)',
+              fontWeight: 800,
               marginBottom: 'var(--space-2)',
               letterSpacing: '-0.02em',
             }}>
@@ -159,7 +151,7 @@ export default function Login() {
           </div>
 
           <form id="login-form" onSubmit={handleSubmit}
-                style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-5)' }}>
+            style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-5)' }}>
 
             {/* Email */}
             <div className="form-group">
@@ -232,7 +224,7 @@ export default function Login() {
           <p style={{ textAlign: 'center', color: 'var(--text-secondary)', fontSize: 'var(--text-sm)' }}>
             Don't have an account?{' '}
             <Link to="/register" id="go-register"
-                  style={{ color: 'var(--color-primary)', fontWeight: 700, textDecoration: 'none' }}>
+              style={{ color: 'var(--color-primary)', fontWeight: 700, textDecoration: 'none' }}>
               Create one free →
             </Link>
           </p>
@@ -320,11 +312,11 @@ const FieldError = ({ msg }) => (
 );
 
 const glow = ({ top, left, color, size = 240 }) => ({
-  position:     'absolute', top, left,
-  width:        size, height: size,
+  position: 'absolute', top, left,
+  width: size, height: size,
   borderRadius: '50%',
-  background:   color,
-  opacity:      0.07,
-  filter:       `blur(${size * 0.35}px)`,
+  background: color,
+  opacity: 0.07,
+  filter: `blur(${size * 0.35}px)`,
   pointerEvents: 'none',
 });
