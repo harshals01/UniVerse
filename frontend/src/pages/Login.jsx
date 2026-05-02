@@ -41,7 +41,7 @@ export default function Login() {
       const res = await authApi.login({ email: form.email.trim(), password: form.password });
       login(res.data.user, res.data.token);
       toast.success(`Welcome back, ${res.data.user.name}!`);
-      navigate(redirectTo, { replace: true });
+      window.location.href = redirectTo;
     } catch (err) {
       toast.error(err.message || 'Login failed');
     } finally {

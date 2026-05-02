@@ -63,7 +63,7 @@ export default function Register() {
       });
       login(res.data.user, res.data.token);
       toast.success(`Welcome to UniVerse, ${res.data.user.name}! 🎉`);
-      navigate('/', { replace: true });
+      window.location.href = '/';
     } catch (err) {
       toast.error(err.message || 'Registration failed');
     } finally {
