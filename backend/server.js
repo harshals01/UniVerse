@@ -44,10 +44,15 @@ const app = express();
 // ── 3. Global Middleware ──────────────────────────────────────────────────────
 
 // CORS — whitelist allowed origins (supports comma-separated list in CLIENT_URL)
-const allowedOrigins = env.CLIENT_URL
-  .split(',')
-  .map((o) => o.trim())
-  .filter(Boolean);
+// Always include localhost for local dev as a safety fallback.
+const allowedOrigins = [
+  ...( env.CLIENT_URL
+    ? env.CLIENT_URL.split(',').map((o) => o.trim()).filter(Boolean)
+    : []
+  ),
+  'http://localhost:5173',          // local dev fallback
+  'https://uni-verse-plum.vercel.app', // Vercel production
+].filter((v, i, arr) => arr.indexOf(v) === i); // deduplicate
 
 app.use(
   cors({
