@@ -84,9 +84,9 @@ export default function Login() {
           {/* Feature pills */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-3)', marginTop: 'var(--space-8)', alignItems: 'flex-start' }}>
             {[
-              { icon: '🔍', label: 'Lost & Found — recover what matters' },
-              { icon: '🛍️', label: 'Marketplace — trade with students' },
-              { icon: '✨', label: 'AI Notes — study smarter' },
+              { icon: '', label: 'Lost & Found — recover what matters' },
+              { icon: '', label: 'Marketplace — trade with students' },
+              { icon: '', label: 'AI Notes — study smarter' },
             ].map(f => (
               <div key={f.label} style={{
                 display: 'flex', alignItems: 'center', gap: 'var(--space-3)',
