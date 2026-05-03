@@ -52,7 +52,7 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: [true, 'Password is required'],
       minlength: [6, 'Password must be at least 6 characters'],
-      select: false, // ← NEVER returned in queries by default
+      select: false,
     },
 
     role: {
@@ -63,7 +63,7 @@ const userSchema = new mongoose.Schema(
 
     avatar: {
       type: String,
-      default: '', // URL to profile picture (optional)
+      default: '',
     },
 
     college: {
@@ -77,21 +77,17 @@ const userSchema = new mongoose.Schema(
   }
 );
 
-// ── Pre-save Hook: Hash password before every save ────────────────────────────
-// Only runs if password was modified — prevents re-hashing on profile updates.
 userSchema.pre('save', async function (next) {
   if (!this.isModified('password')) return next();
 
-  // Cost factor 12: strong enough for production, ~300ms on modern hardware
-  const salt = await bcrypt.genSalt(12);
+  const salt = await bcrypt.genSalt(10);
   this.password = await bcrypt.hash(this.password, salt);
   next();
 });
 
-// ── Instance Method: Compare plain-text password with stored hash ──────────────
 /**
- * @param {string} enteredPassword - Plain-text password from login form
- * @returns {Promise<boolean>}       - true if match, false otherwise
+ * @param {string} enteredPassword 
+ * @returns {Promise<boolean>}
  */
 userSchema.methods.comparePassword = async function (enteredPassword) {
   return await bcrypt.compare(enteredPassword, this.password);

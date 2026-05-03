@@ -1,9 +1,6 @@
 /**
  * context/AuthContext.jsx
- * ─────────────────────────────────────────────────────────────────────────────
- * Global authentication state: user, token, login, logout.
- * Persists to localStorage so refresh doesn't log the user out.
- * ─────────────────────────────────────────────────────────────────────────────
+
  */
 
 import { createContext, useContext, useState, useEffect, useCallback } from 'react';
@@ -11,34 +8,51 @@ import { authApi } from '../api/authApi.js';
 
 const AuthContext = createContext(null);
 
-export const AuthProvider = ({ children }) => {
-  const [user,    setUser]    = useState(null);
-  const [token,   setToken]   = useState(() => localStorage.getItem('campussync_token'));
-  const [loading, setLoading] = useState(true); // true = hydrating from storage
+const readToken = () => localStorage.getItem('campussync_token');
+const readUser = () => {
+  try {
+    const raw = localStorage.getItem('campussync_user');
+    return raw ? JSON.parse(raw) : null;
+  } catch {
+    return null;
+  }
+};
 
-  // ── Hydrate user from token on mount ──────────────────────────────────────
+export const AuthProvider = ({ children }) => {
+  const [user, setUser] = useState(() => readUser());
+  const [token, setToken] = useState(() => readToken());
+  const [loading, setLoading] = useState(false);
+
   useEffect(() => {
-    const restore = async () => {
-      const stored = localStorage.getItem('campussync_token');
-      if (!stored) { setLoading(false); return; }
-      try {
-        const res = await authApi.getMe();
-        setUser(res.data.user);
-      } catch {
-        // Token expired — clear storage silently
+    const storedToken = readToken();
+    if (!storedToken) return; // Nothing to verify
+
+    let cancelled = false;
+    authApi.getMe()
+      .then((res) => {
+        if (cancelled) return;
+        // Refresh cached user data with latest from server
+        const freshUser = res.data?.user ?? res.user ?? null;
+        if (freshUser) {
+          setUser(freshUser);
+          localStorage.setItem('campussync_user', JSON.stringify(freshUser));
+        }
+      })
+      .catch(() => {
+        if (cancelled) return;
+        // Token expired or invalid — clear silently
         localStorage.removeItem('campussync_token');
         localStorage.removeItem('campussync_user');
         setToken(null);
-      } finally {
-        setLoading(false);
-      }
-    };
-    restore();
+        setUser(null);
+      });
+
+    return () => { cancelled = true; };
   }, []);
 
   const login = useCallback((userData, jwt) => {
     localStorage.setItem('campussync_token', jwt);
-    localStorage.setItem('campussync_user',  JSON.stringify(userData));
+    localStorage.setItem('campussync_user', JSON.stringify(userData));
     setToken(jwt);
     setUser(userData);
   }, []);
