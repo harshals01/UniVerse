@@ -44,10 +44,12 @@ export default function Login() {
       const res = await authApi.login({ email: form.email.trim(), password: form.password });
       login(res.data.user, res.data.token);
       toast.success(`Welcome back, ${res.data.user.name}!`);
-      navigate(redirectTo, { replace: true }); // SPA navigation — no hard reload
+      navigate(redirectTo, { replace: true });
     } catch (err) {
       const msg = err.message || '';
-      if (msg.toLowerCase().includes('invalid') || msg.toLowerCase().includes('password') || msg.toLowerCase().includes('email')) {
+      if (msg === '__TIMEOUT__') {
+        setApiError('__TIMEOUT__'); // rendered as warm-up banner
+      } else if (msg.toLowerCase().includes('invalid') || msg.toLowerCase().includes('password') || msg.toLowerCase().includes('email')) {
         setApiError('Invalid email or password. Please try again.');
       } else {
         setApiError(msg || 'Something went wrong. Please try again.');
@@ -212,22 +214,44 @@ export default function Login() {
 
             {/* Inline API error banner */}
             {apiError && (
-              <div style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: 10,
-                padding: '12px 16px',
-                borderRadius: 'var(--radius-lg)',
-                background: 'rgba(239,68,68,0.10)',
-                border: '1px solid rgba(239,68,68,0.30)',
-                color: '#f87171',
-                fontSize: 'var(--text-sm)',
-                fontWeight: 500,
-                animation: 'fadeSlideIn 0.2s ease',
-              }}>
-                <span style={{ fontSize: '1rem', flexShrink: 0 }}>⚠️</span>
-                {apiError}
-              </div>
+              apiError === '__TIMEOUT__' ? (
+                <div style={{
+                  display: 'flex',
+                  alignItems: 'flex-start',
+                  gap: 10,
+                  padding: '12px 16px',
+                  borderRadius: 'var(--radius-lg)',
+                  background: 'rgba(234,179,8,0.10)',
+                  border: '1px solid rgba(234,179,8,0.30)',
+                  color: '#fbbf24',
+                  fontSize: 'var(--text-sm)',
+                  fontWeight: 500,
+                  animation: 'fadeSlideIn 0.2s ease',
+                }}>
+                  <span style={{ fontSize: '1rem', flexShrink: 0 }}>⏳</span>
+                  <span>
+                    <strong style={{ display: 'block', marginBottom: 2 }}>Server is warming up</strong>
+                    The server was asleep. Please wait a moment and try again.
+                  </span>
+                </div>
+              ) : (
+                <div style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 10,
+                  padding: '12px 16px',
+                  borderRadius: 'var(--radius-lg)',
+                  background: 'rgba(239,68,68,0.10)',
+                  border: '1px solid rgba(239,68,68,0.30)',
+                  color: '#f87171',
+                  fontSize: 'var(--text-sm)',
+                  fontWeight: 500,
+                  animation: 'fadeSlideIn 0.2s ease',
+                }}>
+                  <span style={{ fontSize: '1rem', flexShrink: 0 }}>⚠️</span>
+                  {apiError}
+                </div>
+              )
             )}
 
             {/* Submit */}

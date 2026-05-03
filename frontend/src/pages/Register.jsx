@@ -51,7 +51,11 @@ export default function Register() {
       toast.success('Account created! Please sign in to continue.', { duration: 3000 });
       setTimeout(() => navigate('/login'), 1500);
     } catch (err) {
-      toast.error(err.message || 'Registration failed');
+      if (err.message === '__TIMEOUT__') {
+        toast.error('Server is warming up — please wait a moment and try again.', { duration: 5000 });
+      } else {
+        toast.error(err.message || 'Registration failed');
+      }
     } finally {
       setLoading(false);
     }
