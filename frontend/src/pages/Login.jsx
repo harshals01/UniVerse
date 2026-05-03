@@ -21,6 +21,7 @@ export default function Login() {
   const [form, setForm] = useState({ email: '', password: '' });
   const [showPass, setShowPass] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [apiError, setApiError] = useState(''); // inline server error
 
   const { errors, validate, clearError } = useFormValidation({
     email: [rules.required('Email is required'), rules.email()],
@@ -30,6 +31,7 @@ export default function Login() {
   const change = (e) => {
     setForm(f => ({ ...f, [e.target.name]: e.target.value }));
     clearError(e.target.name);
+    setApiError(''); // clear API error when user starts typing
   };
 
   const handleSubmit = async (ev) => {
@@ -37,13 +39,20 @@ export default function Login() {
     if (!validate(form)) return;
 
     setLoading(true);
+    setApiError('');
     try {
       const res = await authApi.login({ email: form.email.trim(), password: form.password });
       login(res.data.user, res.data.token);
       toast.success(`Welcome back, ${res.data.user.name}!`);
       window.location.href = redirectTo;
     } catch (err) {
-      toast.error(err.message || 'Login failed');
+      // Show specific inline error for bad credentials; generic for everything else
+      const msg = err.message || '';
+      if (msg.toLowerCase().includes('invalid') || msg.toLowerCase().includes('password') || msg.toLowerCase().includes('email')) {
+        setApiError('Invalid email or password. Please try again.');
+      } else {
+        setApiError(msg || 'Something went wrong. Please try again.');
+      }
     } finally {
       setLoading(false);
     }
@@ -202,6 +211,26 @@ export default function Login() {
               {errors.password && <FieldError msg={errors.password} />}
             </div>
 
+            {/* Inline API error banner */}
+            {apiError && (
+              <div style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 10,
+                padding: '12px 16px',
+                borderRadius: 'var(--radius-lg)',
+                background: 'rgba(239,68,68,0.10)',
+                border: '1px solid rgba(239,68,68,0.30)',
+                color: '#f87171',
+                fontSize: 'var(--text-sm)',
+                fontWeight: 500,
+                animation: 'fadeSlideIn 0.2s ease',
+              }}>
+                <span style={{ fontSize: '1rem', flexShrink: 0 }}>⚠️</span>
+                {apiError}
+              </div>
+            )}
+
             {/* Submit */}
             <button
               id="login-submit"
@@ -298,6 +327,10 @@ export default function Login() {
           33% { transform: translate(5%, -5%) scale(1.1); }
           66% { transform: translate(-3%, 4%) scale(0.9); }
           100% { transform: translate(6%, 6%) scale(1.05); }
+        }
+        @keyframes fadeSlideIn {
+          from { opacity: 0; transform: translateY(-4px); }
+          to   { opacity: 1; transform: translateY(0); }
         }
       `}</style>
     </div>

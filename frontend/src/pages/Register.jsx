@@ -2,13 +2,11 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import { authApi } from '../api/authApi.js';
-import { useAuth } from '../context/AuthContext.jsx';
 import Spinner from '../components/common/Spinner.jsx';
 
 const INITIAL = { name: '', email: '', college: '', password: '', confirm: '' };
 
 export default function Register() {
-  const { login } = useAuth();
   const navigate = useNavigate();
   const [form, setForm] = useState(INITIAL);
   const [showPass, setShowPass] = useState(false);
@@ -44,15 +42,15 @@ export default function Register() {
 
     setLoading(true);
     try {
-      const res = await authApi.register({
+      await authApi.register({
         name: form.name.trim(),
         email: form.email.trim(),
         college: form.college.trim(),
         password: form.password,
       });
-      login(res.data.user, res.data.token);
-      toast.success(`Welcome to UniVerse, ${res.data.user.name}! 🎉`);
-      window.location.href = '/';
+      // Do NOT auto-login — redirect to login so the user authenticates explicitly
+      toast.success('Account created! Please sign in to continue. 🎉', { duration: 3000 });
+      setTimeout(() => navigate('/login'), 1500);
     } catch (err) {
       toast.error(err.message || 'Registration failed');
     } finally {
