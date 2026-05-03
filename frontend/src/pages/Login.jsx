@@ -44,7 +44,7 @@ export default function Login() {
       const res = await authApi.login({ email: form.email.trim(), password: form.password });
       login(res.data.user, res.data.token);
       toast.success(`Welcome back, ${res.data.user.name}!`);
-      window.location.href = redirectTo;
+      navigate(redirectTo, { replace: true }); // SPA navigation — no hard reload
     } catch (err) {
       const msg = err.message || '';
       if (msg.toLowerCase().includes('invalid') || msg.toLowerCase().includes('password') || msg.toLowerCase().includes('email')) {
