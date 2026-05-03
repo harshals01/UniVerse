@@ -48,8 +48,7 @@ export default function Register() {
         college: form.college.trim(),
         password: form.password,
       });
-      // Do NOT auto-login — redirect to login so the user authenticates explicitly
-      toast.success('Account created! Please sign in to continue. 🎉', { duration: 3000 });
+      toast.success('Account created! Please sign in to continue.', { duration: 3000 });
       setTimeout(() => navigate('/login'), 1500);
     } catch (err) {
       toast.error(err.message || 'Registration failed');

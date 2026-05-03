@@ -21,7 +21,7 @@ export default function Login() {
   const [form, setForm] = useState({ email: '', password: '' });
   const [showPass, setShowPass] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [apiError, setApiError] = useState(''); // inline server error
+  const [apiError, setApiError] = useState('');
 
   const { errors, validate, clearError } = useFormValidation({
     email: [rules.required('Email is required'), rules.email()],
@@ -31,7 +31,7 @@ export default function Login() {
   const change = (e) => {
     setForm(f => ({ ...f, [e.target.name]: e.target.value }));
     clearError(e.target.name);
-    setApiError(''); // clear API error when user starts typing
+    setApiError('');
   };
 
   const handleSubmit = async (ev) => {
@@ -46,7 +46,6 @@ export default function Login() {
       toast.success(`Welcome back, ${res.data.user.name}!`);
       window.location.href = redirectTo;
     } catch (err) {
-      // Show specific inline error for bad credentials; generic for everything else
       const msg = err.message || '';
       if (msg.toLowerCase().includes('invalid') || msg.toLowerCase().includes('password') || msg.toLowerCase().includes('email')) {
         setApiError('Invalid email or password. Please try again.');
