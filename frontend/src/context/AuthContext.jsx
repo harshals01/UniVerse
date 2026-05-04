@@ -21,7 +21,7 @@ const readUser = () => {
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(() => readUser());
   const [token, setToken] = useState(() => readToken());
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(() => !!readToken());
 
   useEffect(() => {
     const storedToken = readToken();
@@ -31,7 +31,6 @@ export const AuthProvider = ({ children }) => {
     authApi.getMe()
       .then((res) => {
         if (cancelled) return;
-        // Refresh cached user data with latest from server
         const freshUser = res.data?.user ?? res.user ?? null;
         if (freshUser) {
           setUser(freshUser);
@@ -40,11 +39,13 @@ export const AuthProvider = ({ children }) => {
       })
       .catch(() => {
         if (cancelled) return;
-        // Token expired or invalid — clear silently
         localStorage.removeItem('campussync_token');
         localStorage.removeItem('campussync_user');
         setToken(null);
         setUser(null);
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false);
       });
 
     return () => { cancelled = true; };

@@ -4,13 +4,8 @@
  * Mongoose schema for a UniVerse user.
  *
  * Security design:
- *  - Password is hashed with bcrypt (cost factor 12) BEFORE saving.
- *    The plain-text password NEVER touches the database.
- *  - `select: false` on the password field means Mongoose will NEVER
- *    return it in query results unless explicitly requested with .select('+password').
- *  - comparePassword() is an instance method so the controller never
- *    needs to import bcrypt directly.
- *
+ *  - Password is hashed with bcrypt (cost factor 10) BEFORE saving.
+ 
  * Schema fields:
  *  name       - Display name
  *  email      - Unique login identifier
@@ -40,6 +35,7 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: [true, 'Email is required'],
       unique: true,
+      index: true,
       lowercase: true,
       trim: true,
       match: [
@@ -73,7 +69,7 @@ const userSchema = new mongoose.Schema(
     },
   },
   {
-    timestamps: true, // Adds createdAt + updatedAt automatically
+    timestamps: true,
   }
 );
 
@@ -93,11 +89,10 @@ userSchema.methods.comparePassword = async function (enteredPassword) {
   return await bcrypt.compare(enteredPassword, this.password);
 };
 
-// ── Virtual: Omit __v from JSON responses ─────────────────────────────────────
 userSchema.set('toJSON', {
   transform: (_, ret) => {
     delete ret.__v;
-    delete ret.password; // Extra safety — never leak password hash
+    delete ret.password;
     return ret;
   },
 });

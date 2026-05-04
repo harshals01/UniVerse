@@ -70,24 +70,32 @@ export const registerUser = asyncHandler(async (req, res) => {
 export const loginUser = asyncHandler(async (req, res) => {
   const { email, password } = req.body;
 
-  // ── 1. Validate input ─────────────────────────────────────────────────────
   if (!email || !password) {
     return sendError(res, 400, 'Please provide email and password');
   }
 
-  // ── 2. Find user — explicitly select password (hidden by default) ─────────
+  const dbStart = process.hrtime.bigint();
   const user = await User.findOne({ email: email.toLowerCase() }).select('+password');
+  const dbMs = Number(process.hrtime.bigint() - dbStart) / 1_000_000;
+  console.log(`[auth] DB lookup: ${dbMs.toFixed(1)}ms`);
 
-  // ── 3. Check credentials ──────────────────────────────────────────────────
-  // Deliberately vague error — don't reveal which field was wrong (security)
-  if (!user || !(await user.comparePassword(password))) {
+  if (!user) {
     return sendError(res, 401, 'Invalid email or password');
   }
 
-  // ── 4. Generate JWT ───────────────────────────────────────────────────────
+  const hashStart = process.hrtime.bigint();
+  const passwordMatch = await user.comparePassword(password);
+  const hashMs = Number(process.hrtime.bigint() - hashStart) / 1_000_000;
+  console.log(`[auth] bcrypt compare: ${hashMs.toFixed(1)}ms`);
+
+  if (!passwordMatch) {
+    return sendError(res, 401, 'Invalid email or password');
+  }
+
+  // ── 4. Generate JWT ─────────────────────────────────────────────────────
   const token = generateToken(user._id.toString());
 
-  // ── 5. Respond ────────────────────────────────────────────────────────────
+  // ── 5. Respond ────────────────────────────────────────────────────────────────
   return sendSuccess(res, 200, 'Login successful', {
     token,
     user: {
@@ -126,9 +134,9 @@ export const updateMe = asyncHandler(async (req, res) => {
   if (!user) return sendError(res, 404, 'User not found');
 
   // Only update provided fields
-  if (name)    user.name    = name.trim();
+  if (name) user.name = name.trim();
   if (college) user.college = college.trim();
-  if (avatar)  user.avatar  = avatar.trim();
+  if (avatar) user.avatar = avatar.trim();
 
   // pre-save hook WON'T re-hash password (isModified('password') = false)
   const updated = await user.save();
