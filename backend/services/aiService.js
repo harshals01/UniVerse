@@ -101,16 +101,24 @@ const aiService = {
   generate: async (prompt, options = {}) => {
     const { mode = 'notes', delay = 1200 } = options;
 
+    // ── Step 1: Visibility of env state at call time ──────────────────────────
+    console.log('[aiService] DEBUG_ENV:', {
+      hasKey: !!process.env.GROQ_API_KEY,
+      keyPreview: process.env.GROQ_API_KEY?.slice(0, 5) ?? '(none)',
+    });
+
     if (!prompt || prompt.trim().length < 3) {
       throw new Error('Prompt must be at least 3 characters long');
     }
 
     // ── Check for real API key ────────────────────────────────────────────────
     if (process.env.GROQ_API_KEY) {
+      console.log('[aiService] USING GROQ');
       return await aiService._groqGenerate(prompt, { mode });
     }
 
     // ── Fall through to mock ──────────────────────────────────────────────────
+    console.log('[aiService] USING MOCK — set GROQ_API_KEY in .env to switch');
     return await aiService._mockGenerate(prompt, { mode, delay });
   },
 
@@ -154,7 +162,11 @@ const aiService = {
       temperature: 0.7,
     });
 
-    const content = response.choices[0]?.message?.content || '';
+    // ── Step 4 strict guard: hard-throw on empty content ─────────────────────
+    const content = response.choices?.[0]?.message?.content;
+    if (!content) {
+      throw new Error('[aiService] Empty response from Groq — check model name or API quota');
+    }
 
     return {
       content,
