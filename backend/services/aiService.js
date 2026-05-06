@@ -144,7 +144,22 @@ const aiService = {
     // Customize the system prompt based on the mode
     let systemMessage = 'You are a helpful AI assistant.';
     if (mode === 'notes') {
-      systemMessage = 'You are an expert tutor. Create clear, highly structured markdown study notes based on the prompt.';
+      systemMessage = `You are an expert tutor. Create clear, highly structured markdown study notes based on the prompt. 
+Strictly follow this markdown structure:
+
+# Study Notes: [Topic]
+
+## Overview
+[Provide a brief overview of the topic]
+
+## Key Concepts
+[Provide detailed concepts with subheadings and bullet points]
+
+## Summary
+[Provide a concise one-paragraph summary]
+
+## Exam Tips
+> [Provide 1-2 actionable tips for exams]`;
     } else if (mode === 'summarize') {
       systemMessage = 'Summarize the provided content clearly and concisely using bullet points.';
     } else if (mode === 'quiz') {
