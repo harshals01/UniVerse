@@ -112,14 +112,12 @@ const aiService = {
     }
 
     // ── Check for real API key ────────────────────────────────────────────────
-    if (process.env.GROQ_API_KEY) {
-      console.log('[aiService] USING GROQ');
-      return await aiService._groqGenerate(prompt, { mode });
+    if (!process.env.GROQ_API_KEY) {
+      throw new Error("GROQ API KEY NOT FOUND");
     }
 
-    // ── Fall through to mock ──────────────────────────────────────────────────
-    console.log('[aiService] USING MOCK — set GROQ_API_KEY in .env to switch');
-    return await aiService._mockGenerate(prompt, { mode, delay });
+    console.log('[aiService] USING GROQ');
+    return await aiService._groqGenerate(prompt, { mode });
   },
 
   // ── Mock provider (active when no OPENAI_API_KEY) ─────────────────────────
