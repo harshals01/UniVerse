@@ -22,70 +22,6 @@
  * ─────────────────────────────────────────────────────────────────────────────
  */
 
-// ── Mock response templates ───────────────────────────────────────────────────
-// Realistic, formatted markdown-style output. Gives the frontend something
-// meaningful to render even without a real API key.
-
-const MOCK_RESPONSES = {
-  notes: (prompt) => `# Study Notes: ${prompt}
-
-## Overview
-${prompt} is a fundamental concept in academic study. These notes provide a structured breakdown to aid understanding and revision.
-
-## Key Concepts
-
-### 1. Core Definition
-- ${prompt} refers to the systematic study and application of related principles
-- It forms the foundation for advanced topics in its domain
-- Understanding ${prompt} enables better problem-solving in real-world scenarios
-
-### 2. Important Principles
-- **Principle A** — The primary law governing ${prompt} states that related elements interact in predictable ways
-- **Principle B** — Secondary effects can compound the primary behavior
-- **Principle C** — Edge cases require special consideration
-
-### 3. Common Applications
-- Academic research and theory development
-- Practical implementation in industry settings
-- Cross-domain application with adjacent fields
-
-## Summary
-${prompt} is best understood through progressive exposure — start with core definitions, build mental models, then apply concepts through practice.
-
-## Exam Tips
-> Focus on definitions, real-world examples, and be ready to compare with related concepts.
-
-## References
-- Standard textbooks on the subject
-- Peer-reviewed journals in the field
-- Online courses and documentation`,
-
-  summarize: (prompt) => `## AI Summary
-
-**Key Points:**
-- ${prompt.slice(0, 60)}... introduces the core idea
-- Multiple interconnected concepts form the foundation
-- Practical implications extend across several domains
-
-**In one sentence:**
-${prompt.slice(0, 100)}... represents a structured approach to understanding the subject matter through analysis and synthesis.
-
-**Action items:**
-- [ ] Review the main definitions
-- [ ] Practice with sample problems
-- [ ] Connect to prior knowledge`,
-
-  quiz: (prompt) => `## Practice Quiz: ${prompt}
-
-**Q1.** What is the primary definition of ${prompt}?
-> Answer: ${prompt} is defined by its core characteristics and practical applications.
-
-**Q2.** Name three key principles associated with ${prompt}.
-> Answer: (1) Core principle, (2) Secondary principle, (3) Applied principle.
-
-**Q3.** How does ${prompt} relate to adjacent concepts in the field?
-> Answer: It shares foundational elements while having distinct operational differences.`,
-};
 
 // ── Main public interface ─────────────────────────────────────────────────────
 const aiService = {
@@ -120,21 +56,7 @@ const aiService = {
     return await aiService._groqGenerate(prompt, { mode });
   },
 
-  // ── Mock provider (active when no OPENAI_API_KEY) ─────────────────────────
-  _mockGenerate: async (prompt, { mode, delay }) => {
-    // Simulate network latency
-    await new Promise((r) => setTimeout(r, delay));
-
-    const template = MOCK_RESPONSES[mode] ?? MOCK_RESPONSES.notes;
-    const content = template(prompt.trim());
-
-    return {
-      content,
-      tokensUsed: Math.floor(content.length / 4), // Approximate token count
-      provider: 'mock',
-      mode,
-    };
-  },
+  // ── Mock provider removed ───────────────────────────────────────────────────
 
   // ── Groq provider (active when GROQ_API_KEY is set) ─────────────────────────
   _groqGenerate: async (prompt, { mode }) => {
@@ -144,22 +66,8 @@ const aiService = {
     // Customize the system prompt based on the mode
     let systemMessage = 'You are a helpful AI assistant.';
     if (mode === 'notes') {
-      systemMessage = `You are an expert tutor. Create clear, highly structured markdown study notes based on the prompt. 
-Strictly follow this markdown structure:
-
-# Study Notes: [Topic]
-
-## Overview
-[Provide a brief overview of the topic]
-
-## Key Concepts
-[Provide detailed concepts with subheadings and bullet points]
-
-## Summary
-[Provide a concise one-paragraph summary]
-
-## Exam Tips
-> [Provide 1-2 actionable tips for exams]`;
+      systemMessage = `You are an expert tutor. Create clear, comprehensive, and highly structured markdown study notes based on the prompt. 
+Organize the content logically using your own natural headings, bullet points, and key takeaways to make the material easy to study and understand.`;
     } else if (mode === 'summarize') {
       systemMessage = 'Summarize the provided content clearly and concisely using bullet points.';
     } else if (mode === 'quiz') {
