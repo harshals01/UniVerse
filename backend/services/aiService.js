@@ -6,14 +6,8 @@
  * Architecture decisions:
  *  - ONE public function: aiService.generate(prompt, options)
  *  - All modules (notes, summarize, quiz) call the same function
- *  - Swap provider in ONE place — controller never changes
- *  - Mock mode is production-quality: structured, formatted, realistic
- *
- * To switch to real OpenAI later:
- *  1. npm install openai
- *  2. Add OPENAI_API_KEY to .env
- *  3. Replace _mockGenerate() body with real API call
- *  4. Nothing else changes — controllers are untouched
+ *  - Uses Groq API (LLaMA 3) for extremely fast, real-time generation
+ *  - Fails fast: throws an error if GROQ_API_KEY is missing
  *
  * Supported modes (via options.mode):
  *  'notes'     → generate structured study notes from a topic/text
