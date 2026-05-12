@@ -12,13 +12,13 @@
 
 UniVerse solves modern campus friction by providing these key integrated features:
 
-*   **Secure User Authentication**: Robust JWT authentication combined with encrypted data storage for secure, localized access.
+*   **Secure User Authentication**: Ultra-fast JWT authentication featuring optimistic UI hydration and tuned encryption logic for sub-200ms login speeds, alongside robust error handling and secure session redirection.
 *   **Responsive Modern UI**: A beautiful, glassmorphism-inspired aesthetic with dark mode and smooth animations for a seamless user experience.
 *   **Dashboard & User Management**: Comprehensive profile and listing management allowing students to easily track their marketplace and lost & found activities.
 *   **API Integration**: Dynamic and modular full-stack architecture with reliable API endpoints handling requests efficiently.
 *   **Lost & Found System**: A centralized hub to report missing items or list found belongings, drastically improving the chances of recovering lost property on campus.
 *   **Student Marketplace**: A secure, peer-to-peer marketplace where students can buy, sell, or trade textbooks, electronics, and dorm essentials with trusted classmates.
-*   **AI-Powered Notes Module**: Work smarter, not harder. Upload, organize, and analyze lecture notes using built-in Groq and Gemini AI capabilities to instantly generate summaries and smart study guides.
+*   **AI-Powered Notes Module**: Work smarter, not harder. Upload, organize, and analyze lecture notes using live API inference via the **Groq Llama 3 API** to instantly generate real-time summaries and smart study guides.
 *   **File Uploads & Media Support**: Integrated handling for uploading images of items and documents securely.
 *   **Performance Improvements**: Optimized database queries and caching mechanisms for lightning-fast page loads and API responses.
 
@@ -109,6 +109,17 @@ Once both servers are running:
 2. Register a new student account.
 3. Access the **Marketplace** to post an old textbook.
 4. Try out the **Notes** module by writing a brief text or uploading a standard markdown note to generate simple AI summaries.
+
+
+## 🌍 Deployment
+
+UniVerse is fully configured for cloud deployment with optimizations for seamless communication between microservices:
+
+*   **Frontend (Vercel)**: Deployed with SPA rewrite rules (`vercel.json`) to handle client-side React Router navigation without 404 errors.
+*   **Backend (Render)**: Hosted as a web service. Handles CORS correctly via the `CLIENT_URL` environment variable.
+
+> **Note on Free-Tier Hosting (Render)**:
+> If the application has not been accessed for a while, the initial API request (like logging in or fetching data) might take **up to 60 seconds** due to Render's cold-start behavior. The platform includes friendly UI warm-up messages to notify users during this brief delay. Subsequent requests will be lightning fast!
 
 
 ## 📜 License
