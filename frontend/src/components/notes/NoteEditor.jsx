@@ -9,11 +9,25 @@
  * All logic (handleSave, onSave prop contract) is unchanged.
  * ─────────────────────────────────────────────────────────────────────────────
  */
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
-export default function NoteEditor({ note, onSave, saving }) {
+export default function NoteEditor({ note, onSave, saving, insertContent, onInsertConsumed, compact = false }) {
   const [title,   setTitle]   = useState(note?.title   || '');
   const [content, setContent] = useState(note?.content || '');
+
+  /* Sync note when selection changes */
+  useEffect(() => {
+    setTitle(note?.title || '');
+    setContent(note?.content || '');
+  }, [note?._id]);
+
+  /* Inject AI-generated content into editor */
+  useEffect(() => {
+    if (insertContent) {
+      setContent(prev => prev ? `${prev}\n\n${insertContent}` : insertContent);
+      onInsertConsumed?.();
+    }
+  }, [insertContent]);
 
   const handleSave = () => {
     if (!title.trim()) return;
@@ -21,7 +35,7 @@ export default function NoteEditor({ note, onSave, saving }) {
   };
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-5)', height: '100%' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: compact ? 'var(--space-3)' : 'var(--space-5)', height: '100%' }}>
 
       {/* Title input — large, borderless heading style */}
       <input
@@ -55,7 +69,7 @@ export default function NoteEditor({ note, onSave, saving }) {
         onChange={e => setContent(e.target.value)}
         style={{
           flex:       1,
-          minHeight:  280,
+          minHeight:  compact ? 160 : 280,
           lineHeight: 1.9,
           fontSize:   'var(--text-sm)',
           background: 'transparent',

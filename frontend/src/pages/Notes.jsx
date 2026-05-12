@@ -1,41 +1,31 @@
 /**
  * pages/Notes.jsx
  * ─────────────────────────────────────────────────────────────────────────────
- * AI Notes workspace — Dark Modular / Premium Productivity theme.
- *
- * Desktop layout  :  [280px note list sidebar] | [large editor canvas] [300px right rail]
- * Tablet layout   :  sidebar hidden, top nav strip → editor full width
- * Mobile layout   :  note list shown first, tap to open editor overlay
- *
- * All state hooks, API calls, and handler functions are unchanged.
- * ─────────────────────────────────────────────────────────────────────────────
  */
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import toast from 'react-hot-toast';
-import { notesApi }       from '../api/notesApi.js';
-import NoteEditor         from '../components/notes/NoteEditor.jsx';
-import AISummaryPanel     from '../components/notes/AISummaryPanel.jsx';
+import { notesApi } from '../api/notesApi.js';
+import NoteEditor from '../components/notes/NoteEditor.jsx';
+import AISummaryPanel from '../components/notes/AISummaryPanel.jsx';
 
 export default function Notes() {
-  const [notes,        setNotes]        = useState([]);
+  const [notes, setNotes] = useState([]);
   const [selectedNote, setSelectedNote] = useState(null);
-  const [loadingList,  setLoadingList]  = useState(true);
-  const [saving,       setSaving]       = useState(false);
-  const [creating,     setCreating]     = useState(false);
-  const [searchQuery,  setSearchQuery]  = useState('');
-  const [mobileView,   setMobileView]   = useState('list'); // 'list' | 'editor'
+  const [loadingList, setLoadingList] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [creating, setCreating] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [mobileView, setMobileView] = useState('list');
+  const [aiMode, setAiMode] = useState(false);
 
-  /* ── Unchanged API handlers ──────────────────────────────────────────────── */
+  /* ── API handlers ────────────────────────────────────────────────────────── */
   const fetchNotes = useCallback(async (search = '') => {
     setLoadingList(true);
     try {
       const res = await notesApi.getAll(search ? { search } : {});
       setNotes(res.data.notes);
-    } catch (err) {
-      toast.error(err.message);
-    } finally {
-      setLoadingList(false);
-    }
+    } catch (err) { toast.error(err.message); }
+    finally { setLoadingList(false); }
   }, []);
 
   useEffect(() => { fetchNotes(); }, [fetchNotes]);
@@ -49,11 +39,8 @@ export default function Notes() {
       setSelectedNote(newNote);
       setMobileView('editor');
       toast.success('New note created');
-    } catch (err) {
-      toast.error(err.message);
-    } finally {
-      setCreating(false);
-    }
+    } catch (err) { toast.error(err.message); }
+    finally { setCreating(false); }
   };
 
   const handleSave = async ({ title, content }) => {
@@ -66,11 +53,8 @@ export default function Notes() {
       setSelectedNote(updated);
       setNotes(prev => prev.map(n => n._id === updated._id ? { ...n, title } : n));
       toast.success('Note saved');
-    } catch (err) {
-      toast.error(err.message);
-    } finally {
-      setSaving(false);
-    }
+    } catch (err) { toast.error(err.message); }
+    finally { setSaving(false); }
   };
 
   const handleDelete = async (noteId) => {
@@ -78,11 +62,9 @@ export default function Notes() {
     try {
       await notesApi.delete(noteId);
       setNotes(prev => prev.filter(n => n._id !== noteId));
-      if (selectedNote?._id === noteId) { setSelectedNote(null); setMobileView('list'); }
+      if (selectedNote?._id === noteId) { setSelectedNote(null); setMobileView('list'); setAiMode(false); }
       toast.success('Note deleted');
-    } catch (err) {
-      toast.error(err.message);
-    }
+    } catch (err) { toast.error(err.message); }
   };
 
   const handleSelect = async (note) => {
@@ -90,9 +72,7 @@ export default function Notes() {
       const res = await notesApi.getById(note._id);
       setSelectedNote(res.data.note);
       setMobileView('editor');
-    } catch (err) {
-      toast.error(err.message);
-    }
+    } catch (err) { toast.error(err.message); }
   };
 
   const handleAIGenerate = async (prompt, mode) => {
@@ -105,11 +85,23 @@ export default function Notes() {
     return res.data.result;
   };
 
+
+  const handleEnterAiMode = () => {
+    if (selectedNote) setAiMode(true);
+  };
+
   const handleSearch = (e) => {
     const q = e.target.value;
     setSearchQuery(q);
     const timer = setTimeout(() => fetchNotes(q), 400);
     return () => clearTimeout(timer);
+  };
+
+
+  const [insertContent, setInsertContent] = useState(null);
+  const handleApplyToNote = (content) => {
+    setInsertContent(content);
+    toast.success('Content applied to editor ↗');
   };
 
   return (
@@ -118,19 +110,19 @@ export default function Notes() {
 
         {/* ── Workspace header ─────────────────────────────────────────────── */}
         <div style={{
-          display:        'flex',
-          alignItems:     'center',
+          display: 'flex', alignItems: 'center',
           justifyContent: 'space-between',
-          marginBottom:   'var(--space-6)',
-          flexWrap:       'wrap',
-          gap:            'var(--space-3)',
+          marginBottom: 'var(--space-6)',
+          flexWrap: 'wrap', gap: 'var(--space-3)',
         }}>
           <div>
             <h1 style={{ fontSize: 'var(--text-2xl)', fontWeight: 800, letterSpacing: '-0.02em', margin: 0 }}>
-              AI Notes
+              {aiMode ? 'AI Workspace' : 'AI Notes'}
             </h1>
             <p style={{ color: 'var(--text-secondary)', fontSize: 'var(--text-sm)', margin: 'var(--space-1) 0 0' }}>
-              Write · Summarize · Quiz — powered by AI
+              {aiMode
+                ? 'AI-powered study workspace — generate, summarize, quiz'
+                : 'Write · Summarize · Quiz — powered by AI'}
             </p>
           </div>
 
@@ -141,28 +133,44 @@ export default function Notes() {
                 className="notes-mobile-only"
                 onClick={() => setMobileView('list')}
                 style={ghostBtn}
+              >← Notes</button>
+            )}
+
+            {/* Back to Editor (AI mode) */}
+            {aiMode && (
+              <button
+                id="exit-ai-mode-btn"
+                onClick={() => setAiMode(false)}
+                style={{
+                  ...ghostBtn,
+                  border: '1px solid var(--border-primary)',
+                  borderRadius: 'var(--radius-pill)',
+                  color: 'var(--color-primary-light)',
+                  padding: 'var(--space-2) var(--space-4)',
+                }}
               >
-                ← Notes
+                ← Back to Editor
               </button>
             )}
+
             <button
               id="create-note-btn"
               onClick={handleCreate}
               disabled={creating}
               style={{
-                padding:      'var(--space-2) var(--space-5)',
+                padding: 'var(--space-2) var(--space-5)',
                 borderRadius: 'var(--radius-pill)',
-                background:   'var(--color-primary)',
-                color:        '#fff',
-                fontWeight:   700,
-                fontSize:     'var(--text-sm)',
-                border:       'none',
-                cursor:       creating ? 'not-allowed' : 'pointer',
-                opacity:      creating ? 0.7 : 1,
-                transition:   'background var(--transition-fast), box-shadow var(--transition-fast)',
-                whiteSpace:   'nowrap',
+                background: 'var(--color-primary)',
+                color: '#fff',
+                fontWeight: 700,
+                fontSize: 'var(--text-sm)',
+                border: 'none',
+                cursor: creating ? 'not-allowed' : 'pointer',
+                opacity: creating ? 0.7 : 1,
+                transition: 'background var(--transition-fast), box-shadow var(--transition-fast)',
+                whiteSpace: 'nowrap',
               }}
-              onMouseEnter={e => { if (!creating) { e.currentTarget.style.background = 'var(--color-primary-dark)'; e.currentTarget.style.boxShadow = '0 0 18px var(--color-primary-glow)'; }}}
+              onMouseEnter={e => { if (!creating) { e.currentTarget.style.background = 'var(--color-primary-dark)'; e.currentTarget.style.boxShadow = '0 0 18px var(--color-primary-glow)'; } }}
               onMouseLeave={e => { e.currentTarget.style.background = 'var(--color-primary)'; e.currentTarget.style.boxShadow = 'none'; }}
             >
               {creating ? 'Creating…' : '+ New Note'}
@@ -170,13 +178,10 @@ export default function Notes() {
           </div>
         </div>
 
-        {/* ── Workspace grid ───────────────────────────────────────────────── */}
-        <div className="notes-workspace">
+        <div className={`notes-workspace ${aiMode ? 'notes-ai-mode' : ''}`}>
 
           {/* ─── LEFT RAIL: Note list sidebar ──────────────────────────────── */}
           <div className={`notes-sidebar ${mobileView === 'editor' ? 'notes-mobile-hide' : ''}`}>
-
-            {/* Search */}
             <div style={{ padding: 'var(--space-3) var(--space-4)', borderBottom: '1px solid var(--bg-elevated)' }}>
               <div style={{ position: 'relative' }}>
                 <span style={{
@@ -190,16 +195,15 @@ export default function Notes() {
                   value={searchQuery}
                   onChange={handleSearch}
                   style={{
-                    fontSize:     'var(--text-sm)',
-                    paddingLeft:  36,
+                    fontSize: 'var(--text-sm)',
+                    paddingLeft: 36,
                     borderRadius: 'var(--radius-pill)',
-                    background:   'var(--bg-elevated)',
+                    background: 'var(--bg-elevated)',
                   }}
                 />
               </div>
             </div>
 
-            {/* Count */}
             {!loadingList && notes.length > 0 && (
               <p style={{
                 fontSize: 'var(--text-xs)', color: 'var(--text-muted)',
@@ -210,12 +214,9 @@ export default function Notes() {
               </p>
             )}
 
-            {/* Note list */}
             <div style={{ overflowY: 'auto', flex: 1 }}>
               {loadingList ? (
-                <div style={{ padding: 'var(--space-8)', textAlign: 'center', color: 'var(--text-muted)', fontSize: 'var(--text-sm)' }}>
-                  Loading…
-                </div>
+                <div style={{ padding: 'var(--space-8)', textAlign: 'center', color: 'var(--text-muted)', fontSize: 'var(--text-sm)' }}>Loading…</div>
               ) : notes.length === 0 ? (
                 <div style={{ padding: 'var(--space-8)', textAlign: 'center' }}>
                   <p style={{ fontSize: '2rem', marginBottom: 'var(--space-2)' }}>✦</p>
@@ -238,41 +239,46 @@ export default function Notes() {
             </div>
           </div>
 
-          {/* ─── MAIN CANVAS + RIGHT RAIL ───────────────────────────────────── */}
-          <div className={`notes-main-area ${mobileView === 'list' ? 'notes-mobile-hide' : ''}`}>
+          {/* ─── CENTER: AI Workspace (visible in aiMode) OR Editor canvas ──── */}
+          {selectedNote ? (
+            <>
+              {/* AI WORKSPACE — center panel in ai-mode, hidden in normal mode */}
+              <div className={`notes-ai-workspace ${aiMode ? 'notes-ai-workspace--active' : ''}`}>
+                <AISummaryPanel
+                  noteId={selectedNote._id}
+                  onGenerate={handleAIGenerate}
+                  history={selectedNote.aiHistory || []}
+                  aiMode={aiMode}
+                  onEnterAiMode={handleEnterAiMode}
+                  onApplyToNote={handleApplyToNote}
+                  currentNoteContent={selectedNote.content}
+                />
+              </div>
 
-            {selectedNote ? (
-              <div className="notes-canvas-layout">
+              {/* EDITOR PANEL — main in normal mode, compact preview in ai-mode */}
+              <div className={`notes-editor-panel ${aiMode ? 'notes-editor-panel--preview' : ''} ${mobileView === 'list' ? 'notes-mobile-hide' : ''}`}>
+                <div className="notes-editor-card">
 
-                {/* ── Editor canvas (large surface card) ────────────────────── */}
-                <div style={{
-                  background:   'var(--bg-surface)',
-                  borderRadius: 'var(--radius-xl)',
-                  padding:      'var(--space-8)',
-                  display:      'flex',
-                  flexDirection: 'column',
-                  minHeight:    480,
-                }}>
-                  {/* Canvas header */}
+                  {/* Editor card header */}
                   <div style={{
                     display: 'flex', alignItems: 'center', gap: 'var(--space-3)',
-                    marginBottom: 'var(--space-6)', paddingBottom: 'var(--space-4)',
+                    marginBottom: 'var(--space-5)', paddingBottom: 'var(--space-4)',
                     borderBottom: '1px solid var(--bg-elevated)',
                   }}>
                     <div style={{
                       width: 8, height: 8, borderRadius: '50%',
-                      background: 'var(--color-primary)', flexShrink: 0,
+                      background: aiMode ? 'var(--color-accent)' : 'var(--color-primary)', flexShrink: 0,
                     }} />
                     <span style={{ fontSize: 'var(--text-xs)', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
-                      Editor
+                      {aiMode ? 'Preview' : 'Editor'}
                     </span>
                     <span style={{
                       marginLeft: 'auto',
-                      padding:    '2px 10px',
+                      padding: '2px 10px',
                       borderRadius: 'var(--radius-pill)',
-                      background: 'rgba(229,69,3,0.12)',
-                      color:      'var(--color-primary)',
-                      fontSize:   'var(--text-xs)',
+                      background: 'rgba(139,92,246,0.12)',
+                      color: 'var(--color-primary-light)',
+                      fontSize: 'var(--text-xs)',
                       fontWeight: 700,
                     }}>
                       {selectedNote.aiHistory?.length || 0} AI runs
@@ -283,108 +289,121 @@ export default function Notes() {
                     note={selectedNote}
                     onSave={handleSave}
                     saving={saving}
+                    insertContent={insertContent}
+                    onInsertConsumed={() => setInsertContent(null)}
+                    compact={aiMode}
                   />
-                </div>
 
-                {/* ── Right rail ────────────────────────────────────────────── */}
-                <div className="notes-right-rail">
-
-                  {/* Note meta card */}
-                  <div style={railCard}>
-                    <p style={railLabel}>Note Info</p>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-3)' }}>
+                  {/* Note meta (shown in normal mode right rail area) */}
+                  {!aiMode && (
+                    <div style={{ marginTop: 'var(--space-5)', paddingTop: 'var(--space-5)', borderTop: '1px solid var(--bg-elevated)', display: 'flex', flexDirection: 'column', gap: 'var(--space-3)' }}>
                       <InfoRow icon="📅" label="Created" value={new Date(selectedNote.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })} />
                       {selectedNote.subject && <InfoRow icon="📚" label="Subject" value={selectedNote.subject} />}
-                      <InfoRow icon="✦" label="AI Runs"  value={`${selectedNote.aiHistory?.length || 0} interactions`} />
+                      <InfoRow icon="✦" label="AI Runs" value={`${selectedNote.aiHistory?.length || 0} interactions`} />
                     </div>
-                  </div>
+                  )}
 
-                  {/* AI Summary card */}
-                  {selectedNote.aiSummary && (
-                    <div style={railCard}>
-                      <p style={railLabel}>Latest Summary</p>
+                  {/* Latest summary preview in normal mode */}
+                  {!aiMode && selectedNote.aiSummary && (
+                    <div style={{
+                      marginTop: 'var(--space-4)',
+                      padding: 'var(--space-4)',
+                      background: 'rgba(139,92,246,0.06)',
+                      border: '1px solid var(--border-primary)',
+                      borderRadius: 'var(--radius-md)',
+                    }}>
+                      <p style={{ fontSize: 'var(--text-xs)', fontWeight: 700, color: 'var(--color-primary-light)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 'var(--space-2)' }}>
+                        Latest AI Summary
+                      </p>
                       <p style={{
-                        fontSize:  'var(--text-xs)',
-                        color:     'var(--text-secondary)',
-                        lineHeight: 1.7,
-                        margin:    0,
-                        display:   '-webkit-box',
-                        WebkitLineClamp: 6,
-                        WebkitBoxOrient: 'vertical',
-                        overflow: 'hidden',
+                        fontSize: 'var(--text-xs)', color: 'var(--text-secondary)',
+                        lineHeight: 1.7, margin: 0,
+                        display: '-webkit-box', WebkitLineClamp: 5,
+                        WebkitBoxOrient: 'vertical', overflow: 'hidden',
                       }}>
                         {selectedNote.aiSummary}
                       </p>
                     </div>
                   )}
 
-                  {/* AI Panel card */}
-                  <div style={{ ...railCard, padding: 'var(--space-5)' }}>
-                    <AISummaryPanel
-                      noteId={selectedNote._id}
-                      onGenerate={handleAIGenerate}
-                      history={selectedNote.aiHistory || []}
-                    />
-                  </div>
+                  {/* Enter AI Mode CTA (normal mode only) */}
+                  {!aiMode && (
+                    <button
+                      id="enter-ai-mode-btn"
+                      onClick={handleEnterAiMode}
+                      style={{
+                        marginTop: 'var(--space-4)',
+                        width: '100%',
+                        padding: 'var(--space-3)',
+                        borderRadius: 'var(--radius-lg)',
+                        background: 'linear-gradient(135deg, rgba(139,92,246,0.15), rgba(99,102,241,0.10))',
+                        border: '1px solid var(--border-primary)',
+                        color: 'var(--color-primary-light)',
+                        fontWeight: 700,
+                        fontSize: 'var(--text-sm)',
+                        cursor: 'pointer',
+                        transition: 'all var(--transition-base)',
+                        letterSpacing: '0.02em',
+                      }}
+                      onMouseEnter={e => { e.currentTarget.style.background = 'rgba(139,92,246,0.25)'; e.currentTarget.style.boxShadow = '0 0 24px var(--color-primary-glow)'; }}
+                      onMouseLeave={e => { e.currentTarget.style.background = 'linear-gradient(135deg, rgba(139,92,246,0.15), rgba(99,102,241,0.10))'; e.currentTarget.style.boxShadow = 'none'; }}
+                    >
+                      ✨ Open AI Workspace
+                    </button>
+                  )}
                 </div>
               </div>
-            ) : (
-              /* Empty canvas state */
+            </>
+          ) : (
+            <div style={{
+              gridColumn: '2 / -1',
+              background: 'var(--bg-surface)',
+              borderRadius: 'var(--radius-xl)',
+              minHeight: 520,
+              display: 'flex', flexDirection: 'column',
+              alignItems: 'center', justifyContent: 'center',
+              gap: 'var(--space-4)', padding: 'var(--space-10)',
+            }}>
               <div style={{
-                background:     'var(--bg-surface)',
-                borderRadius:   'var(--radius-xl)',
-                minHeight:      520,
-                display:        'flex',
-                flexDirection:  'column',
-                alignItems:     'center',
-                justifyContent: 'center',
-                gap:            'var(--space-4)',
-                padding:        'var(--space-10)',
-              }}>
-                <div style={{
-                  width: 72, height: 72, borderRadius: '50%',
-                  background: 'var(--bg-elevated)',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  fontSize: '2rem',
-                }}>
-                  ✦
-                </div>
-                <h2 style={{ fontSize: 'var(--text-xl)', fontWeight: 700, margin: 0, color: 'var(--text-secondary)' }}>
-                  Select or create a note
-                </h2>
-                <p style={{ fontSize: 'var(--text-sm)', color: 'var(--text-muted)', textAlign: 'center', maxWidth: 340, margin: 0 }}>
-                  Pick a note from the sidebar or create a new one to start writing and using the AI assistant.
-                </p>
-                <button
-                  onClick={handleCreate}
-                  style={{
-                    marginTop:    'var(--space-2)',
-                    padding:      'var(--space-3) var(--space-6)',
-                    borderRadius: 'var(--radius-pill)',
-                    background:   'var(--color-primary)',
-                    color:        '#fff',
-                    fontWeight:   700,
-                    fontSize:     'var(--text-sm)',
-                    border:       'none',
-                    cursor:       'pointer',
-                  }}
-                >
-                  + Create my first note
-                </button>
-              </div>
-            )}
-          </div>
+                width: 72, height: 72, borderRadius: '50%',
+                background: 'var(--bg-elevated)',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                fontSize: '2rem',
+              }}>✦</div>
+              <h2 style={{ fontSize: 'var(--text-xl)', fontWeight: 700, margin: 0, color: 'var(--text-secondary)' }}>
+                Select or create a note
+              </h2>
+              <p style={{ fontSize: 'var(--text-sm)', color: 'var(--text-muted)', textAlign: 'center', maxWidth: 340, margin: 0 }}>
+                Pick a note from the sidebar or create a new one to start writing and using the AI assistant.
+              </p>
+              <button
+                onClick={handleCreate}
+                style={{
+                  marginTop: 'var(--space-2)', padding: 'var(--space-3) var(--space-6)',
+                  borderRadius: 'var(--radius-pill)', background: 'var(--color-primary)',
+                  color: '#fff', fontWeight: 700, fontSize: 'var(--text-sm)',
+                  border: 'none', cursor: 'pointer',
+                }}
+              >+ Create my first note</button>
+            </div>
+          )}
         </div>
       </div>
 
-      {/* ── Workspace layout styles ──────────────────────────────────────────── */}
+      {/* ── Layout Styles ─────────────────────────────────────────────────────── */}
       <style>{`
-        /* Three-zone workspace */
+        /* ── Normal mode: sidebar | editor+rail ── */
         .notes-workspace {
           display: grid;
-          grid-template-columns: 260px 1fr;
+          grid-template-columns: 260px 1fr 300px;
           gap: var(--space-5);
           align-items: start;
+          transition: grid-template-columns 0.45s cubic-bezier(0.4,0,0.2,1);
+        }
+
+        /* ── AI mode: narrow sidebar | big AI center | compact editor ── */
+        .notes-workspace.notes-ai-mode {
+          grid-template-columns: minmax(200px, 20%) 1fr minmax(220px, 23%);
         }
 
         /* Sidebar */
@@ -397,131 +416,156 @@ export default function Notes() {
           max-height:    85vh;
           display:       flex;
           flex-direction: column;
+          border: 1px solid var(--border-subtle);
+          transition: all 0.45s cubic-bezier(0.4,0,0.2,1);
         }
 
-        /* Canvas + right rail */
-        .notes-canvas-layout {
-          display: grid;
-          grid-template-columns: 1fr 300px;
-          gap: var(--space-5);
-          align-items: start;
+        .notes-ai-workspace {
+          display: none;
+          opacity: 0;
+          transform: translateY(8px);
+          transition: opacity 0.35s ease, transform 0.35s ease;
         }
-
-        /* Right rail */
-        .notes-right-rail {
-          display:        flex;
+        .notes-ai-workspace--active {
+          display: flex;
           flex-direction: column;
-          gap:            var(--space-4);
-          position:       sticky;
-          top:            24px;
-          max-height:     85vh;
-          overflow-y:     auto;
+          opacity: 1;
+          transform: translateY(0);
+        }
+
+        /* Editor panel */
+        .notes-editor-panel {
+          transition: all 0.45s cubic-bezier(0.4,0,0.2,1);
+        }
+        .notes-editor-card {
+          background:   var(--bg-surface);
+          border-radius: var(--radius-xl);
+          padding:      var(--space-8);
+          display:      flex;
+          flex-direction: column;
+          min-height:   480px;
+          border: 1px solid var(--border-subtle);
+          transition: all 0.45s cubic-bezier(0.4,0,0.2,1);
+          position: sticky;
+          top: 24px;
+          max-height: 85vh;
+          overflow-y: auto;
+        }
+
+        /* Compact preview card in AI mode */
+        .notes-editor-panel--preview .notes-editor-card {
+          min-height: 300px;
+          padding: var(--space-5);
+          border-color: var(--border-primary);
+          box-shadow: 0 0 20px var(--color-primary-glow-sm);
+        }
+
+        /* Normal mode: editor takes 2 cols (no separate ai panel column) */
+        .notes-workspace:not(.notes-ai-mode) .notes-ai-workspace {
+          display: none !important;
+        }
+        .notes-workspace:not(.notes-ai-mode) .notes-editor-panel {
+          grid-column: 2 / 4;
         }
 
         /* Tablet */
         @media (max-width: 1100px) {
-          .notes-canvas-layout { grid-template-columns: 1fr; }
-          .notes-right-rail    { position: static; max-height: none; }
+          .notes-workspace,
+          .notes-workspace.notes-ai-mode {
+            grid-template-columns: 240px 1fr;
+          }
+          .notes-workspace.notes-ai-mode .notes-editor-panel {
+            grid-column: 1 / -1;
+          }
         }
 
         /* Mobile */
         @media (max-width: 720px) {
-          .notes-workspace      { grid-template-columns: 1fr; }
+          .notes-workspace,
+          .notes-workspace.notes-ai-mode {
+            grid-template-columns: 1fr;
+          }
           .notes-sidebar        { position: static; max-height: 60vh; }
           .notes-mobile-hide    { display: none !important; }
           .notes-mobile-only    { display: flex !important; }
+          .notes-editor-panel   { grid-column: 1 / -1; }
+          .notes-ai-workspace   { grid-column: 1 / -1; }
         }
         @media (min-width: 721px) {
-          .notes-mobile-only    { display: none; }
+          .notes-mobile-only { display: none; }
+        }
+
+        /* Purple glow pulse for AI mode header */
+        @keyframes ai-pulse {
+          0%, 100% { box-shadow: 0 0 0 0 rgba(139,92,246,0); }
+          50%       { box-shadow: 0 0 24px 4px rgba(139,92,246,0.2); }
+        }
+        .notes-workspace.notes-ai-mode .notes-ai-workspace--active {
+          animation: ai-pulse 3s ease-in-out infinite;
+          border-radius: var(--radius-xl);
         }
       `}</style>
     </div>
   );
 }
 
-/* ── Note list item ──────────────────────────────────────────────────────────── */
 function NoteListItem({ note, selected, onSelect, onDelete }) {
   return (
     <div
       onClick={onSelect}
       style={{
-        padding:      'var(--space-4)',
+        padding: 'var(--space-4)',
         borderBottom: '1px solid var(--bg-base)',
-        cursor:       'pointer',
-        background:   selected ? 'var(--bg-elevated)' : 'transparent',
-        borderLeft:   `3px solid ${selected ? 'var(--color-primary)' : 'transparent'}`,
-        transition:   'background var(--transition-fast), border-color var(--transition-fast)',
-        position:     'relative',
+        cursor: 'pointer',
+        background: selected ? 'rgba(139,92,246,0.1)' : 'transparent',
+        borderLeft: `3px solid ${selected ? 'var(--color-primary)' : 'transparent'}`,
+        transition: 'background var(--transition-fast), border-color var(--transition-fast)',
+        position: 'relative',
       }}
       onMouseEnter={e => { if (!selected) e.currentTarget.style.background = 'var(--bg-elevated)'; }}
       onMouseLeave={e => { if (!selected) e.currentTarget.style.background = 'transparent'; }}
     >
       <p style={{
-        fontSize:     'var(--text-sm)',
-        fontWeight:   selected ? 700 : 600,
-        color:        selected ? 'var(--text-primary)' : 'var(--text-secondary)',
+        fontSize: 'var(--text-sm)',
+        fontWeight: selected ? 700 : 600,
+        color: selected ? 'var(--text-primary)' : 'var(--text-secondary)',
         marginBottom: 'var(--space-1)',
         paddingRight: 'var(--space-6)',
-        whiteSpace:   'nowrap',
-        overflow:     'hidden',
+        whiteSpace: 'nowrap',
+        overflow: 'hidden',
         textOverflow: 'ellipsis',
-      }}>
-        {note.title}
-      </p>
+      }}>{note.title}</p>
       <p style={{ fontSize: 'var(--text-xs)', color: 'var(--text-muted)', margin: 0 }}>
         {note.subject && `${note.subject} · `}{new Date(note.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}
       </p>
       <button
         onClick={e => { e.stopPropagation(); onDelete(); }}
         style={{
-          position:   'absolute', top: 'var(--space-3)', right: 'var(--space-3)',
+          position: 'absolute', top: 'var(--space-3)', right: 'var(--space-3)',
           background: 'none', border: 'none',
-          color:      'var(--text-muted)', fontSize: '0.85rem',
-          cursor:     'pointer', opacity: 0,
+          color: 'var(--text-muted)', fontSize: '0.85rem',
+          cursor: 'pointer', opacity: 0,
           transition: 'opacity var(--transition-fast)',
           lineHeight: 1,
         }}
         onMouseEnter={e => { e.currentTarget.style.opacity = 1; e.currentTarget.style.color = 'var(--color-danger)'; }}
         onMouseLeave={e => { e.currentTarget.style.opacity = 0; e.currentTarget.style.color = 'var(--text-muted)'; }}
-      >
-        ⊗
-      </button>
-
-      {/* Hover reveal delete */}
-      <style>{`
-        .notes-sidebar > div > div:hover button { opacity: 0.5 !important; }
-      `}</style>
+      >X</button>
+      <style>{`.notes-sidebar > div > div:hover button { opacity: 0.5 !important; }`}</style>
     </div>
   );
 }
 
-/* ── Rail card styles ────────────────────────────────────────────────────────── */
-const railCard = {
-  background:   'var(--bg-surface)',
-  borderRadius: 'var(--radius-lg)',
-  padding:      'var(--space-5)',
-};
-
-const railLabel = {
-  fontSize:      'var(--text-xs)',
-  fontWeight:    700,
-  color:         'var(--text-muted)',
-  textTransform: 'uppercase',
-  letterSpacing: '0.07em',
-  margin:        '0 0 var(--space-3)',
-};
-
 const ghostBtn = {
   background: 'none', border: 'none',
-  color:      'var(--text-secondary)',
-  fontSize:   'var(--text-sm)',
+  color: 'var(--text-secondary)',
+  fontSize: 'var(--text-sm)',
   fontWeight: 600,
-  cursor:     'pointer',
-  padding:    'var(--space-2) var(--space-3)',
-  display:    'flex', alignItems: 'center', gap: 4,
+  cursor: 'pointer',
+  padding: 'var(--space-2) var(--space-3)',
+  display: 'flex', alignItems: 'center', gap: 4,
 };
 
-/* ── Info row (right rail) ───────────────────────────────────────────────────── */
 const InfoRow = ({ icon, label, value }) => (
   <div style={{ display: 'flex', gap: 'var(--space-3)', alignItems: 'center' }}>
     <div style={{
@@ -529,9 +573,7 @@ const InfoRow = ({ icon, label, value }) => (
       background: 'var(--bg-elevated)',
       display: 'flex', alignItems: 'center', justifyContent: 'center',
       fontSize: '0.85rem', flexShrink: 0,
-    }}>
-      {icon}
-    </div>
+    }}>{icon}</div>
     <div>
       <p style={{ fontSize: 'var(--text-xs)', color: 'var(--text-muted)', margin: 0, textTransform: 'uppercase', letterSpacing: '0.05em', fontWeight: 600 }}>{label}</p>
       <p style={{ fontSize: 'var(--text-xs)', fontWeight: 600, margin: 0, color: 'var(--text-secondary)' }}>{value}</p>
