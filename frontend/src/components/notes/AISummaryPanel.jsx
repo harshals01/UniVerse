@@ -1,27 +1,25 @@
 /**
  * components/notes/AISummaryPanel.jsx
- * AI workspace — compact sidebar widget in normal mode,
- * full center-stage workspace in aiMode.
  */
 import { useState, useRef, useEffect } from 'react';
 import toast from 'react-hot-toast';
 
 const MODE_OPTIONS = [
-  { value: 'notes',     label: '📝 Generate Notes', desc: 'Create structured study notes from your topic',      placeholder: 'e.g. "Explain Newton\'s Laws of Motion"' },
-  { value: 'summarize', label: '⚡ Summarize',       desc: 'Condense your notes into key bullet points',         placeholder: 'e.g. "Summarize my notes above"'         },
-  { value: 'quiz',      label: '🎯 Quiz Me',         desc: 'Generate practice Q&A from your notes',             placeholder: 'e.g. "Create 5 quiz questions from my notes"' },
+  { value: 'notes', label: 'Generate Notes', desc: 'Create structured study notes from your topic', placeholder: 'e.g. "Explain Newton\'s Laws of Motion"' },
+  { value: 'summarize', label: 'Summarize', desc: 'Condense your notes into key bullet points', placeholder: 'e.g. "Summarize my notes above"' },
+  { value: 'quiz', label: 'Quiz Me', desc: 'Generate practice Q&A from your notes', placeholder: 'e.g. "Create 5 quiz questions from my notes"' },
 ];
 
 const renderMarkdown = (text) => {
   if (!text) return '';
   return text
-    .replace(/^# (.+)$/gm,   '<h1>$1</h1>')
-    .replace(/^## (.+)$/gm,  '<h2>$1</h2>')
+    .replace(/^# (.+)$/gm, '<h1>$1</h1>')
+    .replace(/^## (.+)$/gm, '<h2>$1</h2>')
     .replace(/^### (.+)$/gm, '<h3>$1</h3>')
     .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
-    .replace(/^> (.+)$/gm,  '<blockquote>$1</blockquote>')
-    .replace(/`(.+?)`/g,    '<code>$1</code>')
-    .replace(/^- (.+)$/gm,  '<li>$1</li>')
+    .replace(/^> (.+)$/gm, '<blockquote>$1</blockquote>')
+    .replace(/`(.+?)`/g, '<code>$1</code>')
+    .replace(/^- (.+)$/gm, '<li>$1</li>')
     .replace(/(<li>.*<\/li>)/gs, '<ul>$1</ul>')
     .replace(/\[ \]/g, '☐').replace(/\[x\]/gi, '☑')
     .replace(/\n\n/g, '</p><p>');
@@ -31,10 +29,10 @@ export default function AISummaryPanel({
   noteId, onGenerate, history = [],
   aiMode = false, onEnterAiMode, onApplyToNote,
 }) {
-  const [prompt,    setPrompt]  = useState('');
-  const [mode,      setMode]    = useState('notes');
-  const [loading,   setLoading] = useState(false);
-  const [messages,  setMessages] = useState([]); // chat-style log
+  const [prompt, setPrompt] = useState('');
+  const [mode, setMode] = useState('notes');
+  const [loading, setLoading] = useState(false);
+  const [messages, setMessages] = useState([]); // chat-style log
   const chatEndRef = useRef(null);
 
   const currentMode = MODE_OPTIONS.find(m => m.value === mode);
@@ -45,7 +43,7 @@ export default function AISummaryPanel({
 
   const handleGenerate = async () => {
     if (!prompt.trim()) { toast.error('Enter a prompt first'); return; }
-    if (!noteId)        { toast.error('Save the note first'); return; }
+    if (!noteId) { toast.error('Save the note first'); return; }
 
     const userMsg = { role: 'user', text: prompt.trim(), mode, ts: Date.now() };
     setMessages(prev => [...prev, userMsg]);
@@ -408,7 +406,7 @@ function AIHistoryCard({ entry, onCopy, onApply }) {
 /* ── Loading dots ── */
 const LoadingDots = () => (
   <span style={{ display: 'inline-flex', gap: 3 }}>
-    {[0,1,2].map(i => (
+    {[0, 1, 2].map(i => (
       <span key={i} style={{
         width: 6, height: 6, borderRadius: '50%',
         background: 'var(--color-primary-light)',
