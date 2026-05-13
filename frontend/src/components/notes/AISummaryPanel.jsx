@@ -12,17 +12,73 @@ const MODE_OPTIONS = [
 
 const renderMarkdown = (text) => {
   if (!text) return '';
-  return text
-    .replace(/^# (.+)$/gm, '<h1>$1</h1>')
-    .replace(/^## (.+)$/gm, '<h2>$1</h2>')
-    .replace(/^### (.+)$/gm, '<h3>$1</h3>')
+
+  const codeBlocks = [];
+  let out = text.replace(/```([\w]*)\n?([\s\S]*?)```/g, (_, lang, code) => {
+    const idx = codeBlocks.length;
+    codeBlocks.push(
+      `<pre class="ai-code-block"><code class="ai-code${lang ? ` lang-${lang}` : ''}">${code.trim()
+        .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+      }</code></pre>`
+    );
+    return `%%CODEBLOCK_${idx}%%`;
+  });
+
+  const lines = out.split('\n');
+  const result = [];
+  let inUL = false, inOL = false;
+
+  const flushList = () => {
+    if (inUL) { result.push('</ul>'); inUL = false; }
+    if (inOL) { result.push('</ol>'); inOL = false; }
+  };
+
+  for (let line of lines) {
+    // headings
+    if (/^### (.+)$/.test(line)) { flushList(); result.push(`<h3>${line.slice(4)}</h3>`); continue; }
+    if (/^## (.+)$/.test(line)) { flushList(); result.push(`<h2>${line.slice(3)}</h2>`); continue; }
+    if (/^# (.+)$/.test(line)) { flushList(); result.push(`<h1>${line.slice(2)}</h1>`); continue; }
+    // blockquote
+    if (/^> (.+)$/.test(line)) { flushList(); result.push(`<blockquote>${line.slice(2)}</blockquote>`); continue; }
+    // unordered list
+    if (/^[\-\*] (.+)$/.test(line)) {
+      if (inOL) { result.push('</ol>'); inOL = false; }
+      if (!inUL) { result.push('<ul>'); inUL = true; }
+      result.push(`<li>${line.slice(2)}</li>`);
+      continue;
+    }
+    // ordered list
+    if (/^\d+\. (.+)$/.test(line)) {
+      if (inUL) { result.push('</ul>'); inUL = false; }
+      if (!inOL) { result.push('<ol>'); inOL = true; }
+      result.push(`<li>${line.replace(/^\d+\.\s*/, '')}</li>`);
+      continue;
+    }
+    // empty line = paragraph break
+    if (line.trim() === '') {
+      flushList();
+      result.push('<br/>');
+      continue;
+    }
+    // regular line
+    flushList();
+    result.push(line);
+  }
+  flushList();
+
+  out = result.join('\n');
+
+  out = out
     .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
-    .replace(/^> (.+)$/gm, '<blockquote>$1</blockquote>')
-    .replace(/`(.+?)`/g, '<code>$1</code>')
-    .replace(/^- (.+)$/gm, '<li>$1</li>')
-    .replace(/(<li>.*<\/li>)/gs, '<ul>$1</ul>')
-    .replace(/\[ \]/g, '☐').replace(/\[x\]/gi, '☑')
-    .replace(/\n\n/g, '</p><p>');
+    .replace(/\*(.+?)\*/g, '<em>$1</em>')
+    .replace(/`([^`]+)`/g, '<code>$1</code>')
+    .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noreferrer">$1</a>')
+    .replace(/\[ \]/g, '☐').replace(/\[x\]/gi, '☑');
+
+  // Pass 4: restore code blocks
+  out = out.replace(/%%CODEBLOCK_(\d+)%%/g, (_, i) => codeBlocks[Number(i)]);
+
+  return out;
 };
 
 export default function AISummaryPanel({
@@ -123,8 +179,9 @@ export default function AISummaryPanel({
       background: 'var(--bg-surface)',
       border: '1px solid var(--border-primary)',
       borderRadius: 'var(--radius-xl)',
-      overflow: 'hidden',
+      overflow: 'visible',
       height: '85vh',
+      minHeight: 0,
       boxShadow: '0 0 40px rgba(139,92,246,0.12)',
     }}>
 
@@ -179,7 +236,19 @@ export default function AISummaryPanel({
       </div>
 
       {/* ── Chat messages area ── */}
-      <div style={{ flex: 1, overflowY: 'auto', padding: 'var(--space-6)', display: 'flex', flexDirection: 'column', gap: 'var(--space-5)' }}>
+      <div style={{
+        flex: 1,
+        minHeight: 0,
+        overflowY: 'auto',
+        overflowX: 'hidden',
+        padding: 'var(--space-6)',
+        display: 'flex',
+        flexDirection: 'column',
+        gap: 'var(--space-5)',
+        scrollBehavior: 'smooth',
+        wordBreak: 'break-word',
+        overflowWrap: 'anywhere',
+      }}>
 
         {/* Empty state */}
         {messages.length === 0 && history.length === 0 && (
@@ -191,7 +260,7 @@ export default function AISummaryPanel({
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               fontSize: '2.2rem',
               boxShadow: '0 0 30px rgba(139,92,246,0.15)',
-            }}></div>
+            }}>✨</div>
             <div style={{ textAlign: 'center' }}>
               <p style={{ fontSize: 'var(--text-base)', fontWeight: 700, color: 'var(--text-secondary)', margin: '0 0 var(--space-2)' }}>
                 {currentMode.desc}
@@ -282,7 +351,15 @@ export default function AISummaryPanel({
                 </div>
               </div>
               {/* AI card body */}
-              <div className="prose ai-prose" style={{ padding: 'var(--space-5)', fontSize: 'var(--text-sm)' }}
+              <div className="prose ai-prose"
+                style={{
+                  padding: 'var(--space-6)',
+                  fontSize: 'var(--text-base)',
+                  lineHeight: 1.85,
+                  whiteSpace: 'normal',
+                  wordBreak: 'break-word',
+                  overflowWrap: 'anywhere',
+                }}
                 dangerouslySetInnerHTML={{ __html: renderMarkdown(msg.text) }} />
             </div>
           );
@@ -360,25 +437,42 @@ export default function AISummaryPanel({
         </p>
       </div>
 
-      {/* Prose styles */}
+      {/* Prose + code-block styles */}
       <style>{`
-        .ai-prose h1,.ai-prose h2,.ai-prose h3 { color:var(--text-primary); margin:var(--space-4) 0 var(--space-2); }
-        .ai-prose h1 { font-size:var(--text-xl); }
-        .ai-prose h2 { font-size:var(--text-lg); }
-        .ai-prose h3 { font-size:var(--text-base); }
-        .ai-prose p  { color:var(--text-secondary); line-height:1.8; margin:0 0 var(--space-3); }
-        .ai-prose ul { padding-left:var(--space-5); color:var(--text-secondary); }
-        .ai-prose li { margin-bottom:var(--space-2); line-height:1.7; }
-        .ai-prose code { background:rgba(139,92,246,0.12); color:var(--color-primary-light); padding:1px 6px; border-radius:4px; }
-        .ai-prose blockquote { border-left:3px solid var(--color-primary); padding-left:var(--space-4); color:var(--text-muted); margin:var(--space-3) 0; }
-        .ai-prose strong { color:var(--text-primary); }
+        /* Headings */
+        .ai-prose h1,.ai-prose h2,.ai-prose h3 { color:var(--text-primary); margin:var(--space-5) 0 var(--space-2); font-weight:800; line-height:1.3; }
+        .ai-prose h1 { font-size:var(--text-2xl); }
+        .ai-prose h2 { font-size:var(--text-xl); }
+        .ai-prose h3 { font-size:var(--text-lg); }
+        /* Paragraphs & breaks */
+        .ai-prose p  { color:var(--text-secondary); line-height:1.85; margin:0 0 var(--space-3); }
+        .ai-prose br { display:block; margin-bottom:var(--space-2); }
+        /* Lists */
+        .ai-prose ul,.ai-prose ol { padding-left:var(--space-6); color:var(--text-secondary); margin:0 0 var(--space-4); }
+        .ai-prose li { margin-bottom:var(--space-2); line-height:1.8; }
+        .ai-prose ol { list-style-type:decimal; }
+        /* Inline code */
+        .ai-prose code { background:rgba(139,92,246,0.15); color:var(--color-primary-light); padding:2px 7px; border-radius:5px; font-size:0.88em; font-family:'Fira Code',monospace,monospace; }
+        /* Fenced code blocks */
+        .ai-code-block { background:rgba(0,0,0,0.35); border:1px solid rgba(139,92,246,0.2); border-radius:var(--radius-lg); padding:var(--space-4) var(--space-5); margin:var(--space-4) 0; overflow-x:auto; }
+        .ai-code-block code { background:transparent; color:#e2e8f0; padding:0; font-size:0.85em; font-family:'Fira Code','Cascadia Code',monospace; white-space:pre; }
+        /* Blockquote */
+        .ai-prose blockquote { border-left:3px solid var(--color-primary); padding:var(--space-2) var(--space-4); color:var(--text-muted); margin:var(--space-3) 0; background:rgba(139,92,246,0.05); border-radius:0 var(--radius-sm) var(--radius-sm) 0; font-style:italic; }
+        /* Links */
+        .ai-prose a { color:var(--color-primary-light); text-decoration:underline; text-underline-offset:3px; }
+        /* Bold / italic */
+        .ai-prose strong { color:var(--text-primary); font-weight:700; }
+        .ai-prose em { color:var(--text-secondary); font-style:italic; }
+        /* Spacing guard */
+        .ai-prose > *:first-child { margin-top:0 !important; }
+        .ai-prose > *:last-child  { margin-bottom:0 !important; }
+        /* Loading animation */
         @keyframes bounce { 0%,80%,100%{transform:scale(0)} 40%{transform:scale(1)} }
       `}</style>
     </div>
   );
 }
 
-/* ── History card (shown on first open in aiMode) ── */
 function AIHistoryCard({ entry, onCopy, onApply }) {
   return (
     <div style={{
@@ -403,7 +497,6 @@ function AIHistoryCard({ entry, onCopy, onApply }) {
   );
 }
 
-/* ── Loading dots ── */
 const LoadingDots = () => (
   <span style={{ display: 'inline-flex', gap: 3 }}>
     {[0, 1, 2].map(i => (
