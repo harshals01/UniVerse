@@ -85,23 +85,29 @@ export default function Notes() {
     return res.data.result;
   };
 
+  const handleAutoSave = async (promptText, aiContent, mode) => {
+    const title = `AI ${mode.charAt(0).toUpperCase() + mode.slice(1)}: ${promptText.slice(0, 60)}${promptText.length > 60 ? '…' : ''}`;
+    const content = aiContent;
+    try {
+      const res = await notesApi.create({ title, content });
+      const newNote = res.data.note;
+      setNotes(prev => [newNote, ...prev]);
+      toast.success('AI response saved as note ✓', { duration: 2000, icon: '📝' });
+    } catch {
+    }
+  };
 
   const handleEnterAiMode = () => {
     if (selectedNote) setAiMode(true);
   };
+
+  const handleCloseAiMode = () => setAiMode(false);
 
   const handleSearch = (e) => {
     const q = e.target.value;
     setSearchQuery(q);
     const timer = setTimeout(() => fetchNotes(q), 400);
     return () => clearTimeout(timer);
-  };
-
-
-  const [insertContent, setInsertContent] = useState(null);
-  const handleApplyToNote = (content) => {
-    setInsertContent(content);
-    toast.success('Content applied to editor ↗');
   };
 
   return (
@@ -116,13 +122,9 @@ export default function Notes() {
           flexWrap: 'wrap', gap: 'var(--space-3)',
         }}>
           <div>
-            <h1 style={{ fontSize: 'var(--text-2xl)', fontWeight: 800, letterSpacing: '-0.02em', margin: 0 }}>
-              {aiMode ? 'AI Workspace' : 'AI Notes'}
-            </h1>
+            <h1 style={{ fontSize: 'var(--text-2xl)', fontWeight: 800, letterSpacing: '-0.02em', margin: 0 }}>AI Notes</h1>
             <p style={{ color: 'var(--text-secondary)', fontSize: 'var(--text-sm)', margin: 'var(--space-1) 0 0' }}>
-              {aiMode
-                ? 'AI-powered study workspace — generate, summarize, quiz'
-                : 'Write · Summarize · Quiz — powered by AI'}
+              Write · Summarize · Quiz — powered by AI
             </p>
           </div>
 
@@ -134,23 +136,6 @@ export default function Notes() {
                 onClick={() => setMobileView('list')}
                 style={ghostBtn}
               >← Notes</button>
-            )}
-
-            {/* Back to Editor (AI mode) */}
-            {aiMode && (
-              <button
-                id="exit-ai-mode-btn"
-                onClick={() => setAiMode(false)}
-                style={{
-                  ...ghostBtn,
-                  border: '1px solid var(--border-primary)',
-                  borderRadius: 'var(--radius-pill)',
-                  color: 'var(--color-primary-light)',
-                  padding: 'var(--space-2) var(--space-4)',
-                }}
-              >
-                ← Back to Editor
-              </button>
             )}
 
             <button
@@ -239,24 +224,12 @@ export default function Notes() {
             </div>
           </div>
 
-          {/* ─── CENTER: AI Workspace (visible in aiMode) OR Editor canvas ──── */}
+          {/* ─── CENTER: Editor canvas (AI panel is rendered as full-screen overlay below) ──── */}
           {selectedNote ? (
             <>
-              {/* AI WORKSPACE — center panel in ai-mode, hidden in normal mode */}
-              <div className={`notes-ai-workspace ${aiMode ? 'notes-ai-workspace--active' : ''}`}>
-                <AISummaryPanel
-                  noteId={selectedNote._id}
-                  onGenerate={handleAIGenerate}
-                  history={selectedNote.aiHistory || []}
-                  aiMode={aiMode}
-                  onEnterAiMode={handleEnterAiMode}
-                  onApplyToNote={handleApplyToNote}
-                  currentNoteContent={selectedNote.content}
-                />
-              </div>
 
-              {/* EDITOR PANEL — main in normal mode, compact preview in ai-mode */}
-              <div className={`notes-editor-panel ${aiMode ? 'notes-editor-panel--preview' : ''} ${mobileView === 'list' ? 'notes-mobile-hide' : ''}`}>
+              {/* EDITOR PANEL — always full width in normal mode */}
+              <div className={`notes-editor-panel ${mobileView === 'list' ? 'notes-mobile-hide' : ''}`}>
                 <div className="notes-editor-card">
 
                   {/* Editor card header */}
@@ -267,10 +240,10 @@ export default function Notes() {
                   }}>
                     <div style={{
                       width: 8, height: 8, borderRadius: '50%',
-                      background: aiMode ? 'var(--color-accent)' : 'var(--color-primary)', flexShrink: 0,
+                      background: 'var(--color-primary)', flexShrink: 0,
                     }} />
                     <span style={{ fontSize: 'var(--text-xs)', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
-                      {aiMode ? 'Preview' : 'Editor'}
+                      Editor
                     </span>
                     <span style={{
                       marginLeft: 'auto',
@@ -289,22 +262,17 @@ export default function Notes() {
                     note={selectedNote}
                     onSave={handleSave}
                     saving={saving}
-                    insertContent={insertContent}
-                    onInsertConsumed={() => setInsertContent(null)}
-                    compact={aiMode}
                   />
 
-                  {/* Note meta (shown in normal mode right rail area) */}
-                  {!aiMode && (
-                    <div style={{ marginTop: 'var(--space-5)', paddingTop: 'var(--space-5)', borderTop: '1px solid var(--bg-elevated)', display: 'flex', flexDirection: 'column', gap: 'var(--space-3)' }}>
-                      <InfoRow icon="📅" label="Created" value={new Date(selectedNote.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })} />
-                      {selectedNote.subject && <InfoRow icon="📚" label="Subject" value={selectedNote.subject} />}
-                      <InfoRow icon="✦" label="AI Runs" value={`${selectedNote.aiHistory?.length || 0} interactions`} />
-                    </div>
-                  )}
+                  {/* Note meta */}
+                  <div style={{ marginTop: 'var(--space-5)', paddingTop: 'var(--space-5)', borderTop: '1px solid var(--bg-elevated)', display: 'flex', flexDirection: 'column', gap: 'var(--space-3)' }}>
+                    <InfoRow icon="📅" label="Created" value={new Date(selectedNote.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })} />
+                    {selectedNote.subject && <InfoRow icon="📚" label="Subject" value={selectedNote.subject} />}
+                    <InfoRow icon="✦" label="AI Runs" value={`${selectedNote.aiHistory?.length || 0} interactions`} />
+                  </div>
 
-                  {/* Latest summary preview in normal mode */}
-                  {!aiMode && selectedNote.aiSummary && (
+                  {/* Latest summary preview */}
+                  {selectedNote.aiSummary && (
                     <div style={{
                       marginTop: 'var(--space-4)',
                       padding: 'var(--space-4)',
@@ -318,39 +286,35 @@ export default function Notes() {
                       <p style={{
                         fontSize: 'var(--text-xs)', color: 'var(--text-secondary)',
                         lineHeight: 1.7, margin: 0,
-                        display: '-webkit-box', WebkitLineClamp: 5,
-                        WebkitBoxOrient: 'vertical', overflow: 'hidden',
                       }}>
                         {selectedNote.aiSummary}
                       </p>
                     </div>
                   )}
 
-                  {/* Enter AI Mode CTA (normal mode only) */}
-                  {!aiMode && (
-                    <button
-                      id="enter-ai-mode-btn"
-                      onClick={handleEnterAiMode}
-                      style={{
-                        marginTop: 'var(--space-4)',
-                        width: '100%',
-                        padding: 'var(--space-3)',
-                        borderRadius: 'var(--radius-lg)',
-                        background: 'linear-gradient(135deg, rgba(139,92,246,0.15), rgba(99,102,241,0.10))',
-                        border: '1px solid var(--border-primary)',
-                        color: 'var(--color-primary-light)',
-                        fontWeight: 700,
-                        fontSize: 'var(--text-sm)',
-                        cursor: 'pointer',
-                        transition: 'all var(--transition-base)',
-                        letterSpacing: '0.02em',
-                      }}
-                      onMouseEnter={e => { e.currentTarget.style.background = 'rgba(139,92,246,0.25)'; e.currentTarget.style.boxShadow = '0 0 24px var(--color-primary-glow)'; }}
-                      onMouseLeave={e => { e.currentTarget.style.background = 'linear-gradient(135deg, rgba(139,92,246,0.15), rgba(99,102,241,0.10))'; e.currentTarget.style.boxShadow = 'none'; }}
-                    >
-                      ✨ Open AI Workspace
-                    </button>
-                  )}
+                  {/* Open AI Workspace CTA */}
+                  <button
+                    id="enter-ai-mode-btn"
+                    onClick={handleEnterAiMode}
+                    style={{
+                      marginTop: 'var(--space-4)',
+                      width: '100%',
+                      padding: 'var(--space-3)',
+                      borderRadius: 'var(--radius-lg)',
+                      background: 'linear-gradient(135deg, rgba(139,92,246,0.15), rgba(99,102,241,0.10))',
+                      border: '1px solid var(--border-primary)',
+                      color: 'var(--color-primary-light)',
+                      fontWeight: 700,
+                      fontSize: 'var(--text-sm)',
+                      cursor: 'pointer',
+                      transition: 'all var(--transition-base)',
+                      letterSpacing: '0.02em',
+                    }}
+                    onMouseEnter={e => { e.currentTarget.style.background = 'rgba(139,92,246,0.25)'; e.currentTarget.style.boxShadow = '0 0 24px var(--color-primary-glow)'; }}
+                    onMouseLeave={e => { e.currentTarget.style.background = 'linear-gradient(135deg, rgba(139,92,246,0.15), rgba(99,102,241,0.10))'; e.currentTarget.style.boxShadow = 'none'; }}
+                  >
+                    ✨ Open AI Workspace
+                  </button>
                 </div>
               </div>
             </>
@@ -388,121 +352,74 @@ export default function Notes() {
             </div>
           )}
         </div>
+
+        {/* ── AI Chat Modal — full-screen overlay, rendered outside grid ── */}
+        {selectedNote && (
+          <AISummaryPanel
+            noteId={selectedNote._id}
+            onGenerate={handleAIGenerate}
+            history={selectedNote.aiHistory || []}
+            aiMode={aiMode}
+            onEnterAiMode={handleCloseAiMode}
+            onAutoSave={handleAutoSave}
+          />
+        )}
       </div>
 
       {/* ── Layout Styles ─────────────────────────────────────────────────────── */}
       <style>{`
-        /* ── Normal mode: sidebar | editor+rail ── */
+        /* ── Workspace grid: sidebar | editor ── */
         .notes-workspace {
           display: grid;
-          grid-template-columns: 260px 1fr 300px;
+          grid-template-columns: 260px 1fr;
           gap: var(--space-5);
           align-items: start;
-          transition: grid-template-columns 0.45s cubic-bezier(0.4,0,0.2,1);
-        }
-
-        /* ── AI mode: narrow sidebar | big AI center | compact editor ── */
-        .notes-workspace.notes-ai-mode {
-          grid-template-columns: minmax(200px, 20%) 1fr minmax(220px, 23%);
         }
 
         /* Sidebar */
         .notes-sidebar {
-          background:    var(--bg-surface);
-          border-radius: var(--radius-lg);
-          overflow:      hidden;
-          position:      sticky;
-          top:           24px;
-          max-height:    85vh;
-          display:       flex;
+          background:     var(--bg-surface);
+          border-radius:  var(--radius-lg);
+          overflow:       hidden;
+          position:       sticky;
+          top:            24px;
+          max-height:     85vh;
+          display:        flex;
           flex-direction: column;
           border: 1px solid var(--border-subtle);
-          transition: all 0.45s cubic-bezier(0.4,0,0.2,1);
-        }
-
-        .notes-ai-workspace {
-          display: none;
-          opacity: 0;
-          transform: translateY(8px);
-          transition: opacity 0.35s ease, transform 0.35s ease;
-        }
-        .notes-ai-workspace--active {
-          display: flex;
-          flex-direction: column;
-          opacity: 1;
-          transform: translateY(0);
         }
 
         /* Editor panel */
-        .notes-editor-panel {
-          transition: all 0.45s cubic-bezier(0.4,0,0.2,1);
-        }
+        .notes-editor-panel { grid-column: 2 / -1; }
         .notes-editor-card {
-          background:   var(--bg-surface);
-          border-radius: var(--radius-xl);
-          padding:      var(--space-8);
-          display:      flex;
+          background:     var(--bg-surface);
+          border-radius:  var(--radius-xl);
+          padding:        var(--space-8);
+          display:        flex;
           flex-direction: column;
-          min-height:   480px;
+          min-height:     480px;
           border: 1px solid var(--border-subtle);
-          transition: all 0.45s cubic-bezier(0.4,0,0.2,1);
           position: sticky;
           top: 24px;
           max-height: 85vh;
           overflow-y: auto;
         }
 
-        /* Compact preview card in AI mode */
-        .notes-editor-panel--preview .notes-editor-card {
-          min-height: 300px;
-          padding: var(--space-5);
-          border-color: var(--border-primary);
-          box-shadow: 0 0 20px var(--color-primary-glow-sm);
-        }
-
-        /* Normal mode: editor takes 2 cols (no separate ai panel column) */
-        .notes-workspace:not(.notes-ai-mode) .notes-ai-workspace {
-          display: none !important;
-        }
-        .notes-workspace:not(.notes-ai-mode) .notes-editor-panel {
-          grid-column: 2 / 4;
-        }
-
         /* Tablet */
-        @media (max-width: 1100px) {
-          .notes-workspace,
-          .notes-workspace.notes-ai-mode {
-            grid-template-columns: 240px 1fr;
-          }
-          .notes-workspace.notes-ai-mode .notes-editor-panel {
-            grid-column: 1 / -1;
-          }
+        @media (max-width: 900px) {
+          .notes-workspace { grid-template-columns: 220px 1fr; }
         }
 
         /* Mobile */
         @media (max-width: 720px) {
-          .notes-workspace,
-          .notes-workspace.notes-ai-mode {
-            grid-template-columns: 1fr;
-          }
-          .notes-sidebar        { position: static; max-height: 60vh; }
-          .notes-mobile-hide    { display: none !important; }
-          .notes-mobile-only    { display: flex !important; }
-          .notes-editor-panel   { grid-column: 1 / -1; }
-          .notes-ai-workspace   { grid-column: 1 / -1; }
+          .notes-workspace        { grid-template-columns: 1fr; }
+          .notes-sidebar          { position: static; max-height: 60vh; }
+          .notes-mobile-hide      { display: none !important; }
+          .notes-mobile-only      { display: flex !important; }
+          .notes-editor-panel     { grid-column: 1 / -1; }
         }
         @media (min-width: 721px) {
           .notes-mobile-only { display: none; }
-        }
-
-        /* Purple glow pulse for AI mode header */
-        @keyframes ai-pulse {
-          0%, 100% { box-shadow: 0 0 0 0 rgba(139,92,246,0); }
-          50%       { box-shadow: 0 0 24px 4px rgba(139,92,246,0.2); }
-        }
-        .notes-workspace.notes-ai-mode .notes-ai-workspace--active {
-          animation: ai-pulse 3s ease-in-out infinite;
-          border-radius: var(--radius-xl);
         }
       `}</style>
     </div>
