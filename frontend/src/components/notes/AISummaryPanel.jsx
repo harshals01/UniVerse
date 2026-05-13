@@ -191,7 +191,7 @@ export default function AISummaryPanel({
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               fontSize: '2.2rem',
               boxShadow: '0 0 30px rgba(139,92,246,0.15)',
-            }}>✨</div>
+            }}></div>
             <div style={{ textAlign: 'center' }}>
               <p style={{ fontSize: 'var(--text-base)', fontWeight: 700, color: 'var(--text-secondary)', margin: '0 0 var(--space-2)' }}>
                 {currentMode.desc}
@@ -352,7 +352,7 @@ export default function AISummaryPanel({
               transition: 'all var(--transition-fast)',
               flexShrink: 0,
             }}>
-            {loading ? '⏳ Thinking…' : '✨ Generate'}
+            {loading ? '⏳ Thinking…' : 'Generate'}
           </button>
         </div>
         <p style={{ fontSize: 'var(--text-xs)', color: 'var(--text-muted)', margin: 'var(--space-2) 0 0' }}>
