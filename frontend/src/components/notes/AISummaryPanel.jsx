@@ -292,12 +292,11 @@ export default function AISummaryPanel({
               {/* AI card body */}
               <MarkdownContent
                 content={msg.text}
+                className="notes-output"
                 style={{
                   padding: 'var(--space-6)',
                   fontSize: 'var(--text-base)',
                   lineHeight: 1.85,
-                  wordBreak: 'break-word',
-                  overflowWrap: 'anywhere',
                 }}
               />
             </div>
@@ -413,6 +412,17 @@ export default function AISummaryPanel({
         /* Spacing guard */
         .ai-prose > *:first-child { margin-top:0 !important; }
         .ai-prose > *:last-child  { margin-bottom:0 !important; }
+        /* ── Notes output container: full response, scrollable ── */
+        .notes-output {
+          height: 100%;
+          max-height: 100%;
+          overflow-y: auto;
+          overflow-x: hidden;
+          white-space: pre-wrap;
+          word-break: break-word;
+          overflow-wrap: anywhere;
+          padding-bottom: 80px;
+        }
         /* Loading animation */
         @keyframes bounce { 0%,80%,100%{transform:scale(0)} 40%{transform:scale(1)} }
       `}</style>
