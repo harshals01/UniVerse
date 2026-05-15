@@ -77,9 +77,11 @@ export default function Notes() {
 
   const handleAIGenerate = async (prompt, mode) => {
     const res = await notesApi.generateAI(selectedNote._id, prompt, mode);
+    // Only update aiHistory — never write aiSummary so workspace output
+    // stays isolated inside the AI Workspace panel and doesn't leak into
+    // the "Latest AI Summary" block or any other chat preview area.
     setSelectedNote(prev => ({
       ...prev,
-      aiSummary: res.data.result.content,
       aiHistory: [...(prev.aiHistory || []), res.data.historyEntry],
     }));
     return res.data.result;
@@ -271,26 +273,9 @@ export default function Notes() {
                     <InfoRow icon="✦" label="AI Runs" value={`${selectedNote.aiHistory?.length || 0} interactions`} />
                   </div>
 
-                  {/* Latest summary preview */}
-                  {selectedNote.aiSummary && (
-                    <div style={{
-                      marginTop: 'var(--space-4)',
-                      padding: 'var(--space-4)',
-                      background: 'rgba(139,92,246,0.06)',
-                      border: '1px solid var(--border-primary)',
-                      borderRadius: 'var(--radius-md)',
-                    }}>
-                      <p style={{ fontSize: 'var(--text-xs)', fontWeight: 700, color: 'var(--color-primary-light)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 'var(--space-2)' }}>
-                        Latest AI Summary
-                      </p>
-                      <p style={{
-                        fontSize: 'var(--text-xs)', color: 'var(--text-secondary)',
-                        lineHeight: 1.7, margin: 0,
-                      }}>
-                        {selectedNote.aiSummary}
-                      </p>
-                    </div>
-                  )}
+                  {/* Latest AI Summary block intentionally removed —
+                      AI workspace responses are scoped to the AI Workspace
+                      panel only and must not surface here. */}
 
                   {/* Open AI Workspace CTA */}
                   <button
