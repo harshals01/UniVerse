@@ -3,7 +3,7 @@
 [![Node.js](https://img.shields.io/badge/Node.js-18.x-green.svg)](https://nodejs.org/)
 [![React](https://img.shields.io/badge/React-18.x-blue.svg)](https://reactjs.org/)
 
-<img width="1915" height="862" alt="image" src="https://github.com/user-attachments/assets/7e912bfd-0a5e-4618-9e50-66af99240c37" />
+![Login Screen](./screenshots/login-screen.png)
 
 
 **UniVerse** is a modular, full-stack platform designed to connect students and streamline campus life. Featuring a newly enhanced, responsive modern UI and significant backend performance improvements, UniVerse consolidates essential tools into one cohesive application. It brings a safer, smarter, and more engaging digital experience to university environments.
