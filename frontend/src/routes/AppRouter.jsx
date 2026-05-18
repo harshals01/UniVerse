@@ -27,6 +27,9 @@ import MarketplaceDetail from '../pages/MarketplaceDetail.jsx';
 // AI Notes
 import Notes from '../pages/Notes.jsx';
 
+// Profile
+import Profile from '../pages/Profile.jsx';
+
 // ── Layout ────────────────────────────────────────────────────────────────────
 const MainLayout = ({ children }) => (
   <>
@@ -92,6 +95,9 @@ export default function AppRouter() {
 
       {/* ── AI Notes ───────────────────────────────────────────────────────── */}
       <Route path="/notes" element={<Page element={<Notes />} />} />
+
+      {/* ── Profile ────────────────────────────────────────────────────────── */}
+      <Route path="/profile" element={<Page element={<Profile />} />} />
 
       {/* Catch-all */}
       <Route path="*" element={<Navigate to="/" replace />} />

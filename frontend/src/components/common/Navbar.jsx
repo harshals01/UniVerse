@@ -36,9 +36,11 @@ export default function Navbar() {
 
   if (!isAuth) return null;
 
-  const pageTitle = NAV_LINKS.find(l =>
-    l.to === '/' ? location.pathname === '/' : location.pathname.startsWith(l.to)
-  )?.label ?? 'UniVerse';
+  const pageTitle = location.pathname === '/profile'
+    ? 'Profile'
+    : NAV_LINKS.find(l =>
+        l.to === '/' ? location.pathname === '/' : location.pathname.startsWith(l.to)
+      )?.label ?? 'UniVerse';
 
   return (
     <>
