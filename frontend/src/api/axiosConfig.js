@@ -27,9 +27,12 @@ api.interceptors.response.use(
   (response) => response.data,
   (error) => {
     if (error.response?.status === 401) {
+      const hadToken = !!localStorage.getItem('campussync_token');
       localStorage.removeItem('campussync_token');
       localStorage.removeItem('campussync_user');
-      window.location.href = '/login';
+      if (hadToken) {
+        window.location.href = '/login';
+      }
     }
     if (error.code === 'ECONNABORTED' || error.message?.includes('timeout')) {
       return Promise.reject(new Error('__TIMEOUT__'));
