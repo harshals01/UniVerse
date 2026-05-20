@@ -61,7 +61,6 @@ MONGO_URI=your_mongodb_connection_string
 JWT_SECRET=your_jwt_secret_key
 GROQ_API_KEY=your_groq_api_key
 GROQ_MODEL=llama-3.3-70b-versatile
-GEMINI_API_KEY=your_gemini_api_key
 MAX_FILE_SIZE=5242880
 UPLOAD_PATH=./uploads
 CLIENT_URL=http://localhost:5173
