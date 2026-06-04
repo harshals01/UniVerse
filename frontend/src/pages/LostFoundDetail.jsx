@@ -9,6 +9,7 @@ import { lostFoundApi } from '../api/lostFoundApi.js';
 import { useAuth } from '../context/AuthContext.jsx';
 import Badge from '../components/common/Badge.jsx';
 import { SkeletonDetailPage } from '../components/common/Skeleton.jsx';
+import { Folder, MapPin, Calendar, Clock, CheckCircle, Trash2 } from 'lucide-react';
 
 const FALLBACK = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="800" height="400" viewBox="0 0 800 400"%3E%3Crect width="800" height="400" fill="%231a1a2e"/%3E%3Ctext x="50%25" y="50%25" fill="%236b6b85" font-size="64" text-anchor="middle" dominant-baseline="middle"%3E📦%3C/text%3E%3C/svg%3E';
 
@@ -79,7 +80,7 @@ export default function LostFoundDetail() {
           ← Back to Lost & Found
         </button>
 
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 380px', gap: 'var(--space-8)', alignItems: 'start' }}>
+        <div className="lfd-grid">
 
           {/* ── LEFT: Image + Description ──────────────────────────────────── */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-6)' }}>
@@ -88,13 +89,13 @@ export default function LostFoundDetail() {
             <div style={{
               borderRadius: 'var(--radius-xl)', overflow: 'hidden',
               border: '1px solid var(--border-subtle)', background: 'var(--bg-elevated)',
-              maxHeight: 460,
+              width: '100%',
             }}>
               <img
                 src={item.image || FALLBACK}
                 alt={item.title}
                 onError={e => { e.target.src = FALLBACK; }}
-                style={{ width: '100%', height: '100%', maxHeight: 460, objectFit: 'cover' }}
+                style={{ width: '100%', maxHeight: 460, objectFit: 'cover', display: 'block' }}
               />
             </div>
 
@@ -103,7 +104,7 @@ export default function LostFoundDetail() {
               <h2 style={{ fontSize: 'var(--text-lg)', fontWeight: 700, marginBottom: 'var(--space-4)' }}>
                 Description
               </h2>
-              <p style={{ color: 'var(--text-secondary)', lineHeight: 1.8 }}>
+              <p style={{ color: 'var(--text-secondary)', lineHeight: 1.8, overflowWrap: 'break-word', wordBreak: 'break-word' }}>
                 {item.description}
               </p>
 
@@ -123,7 +124,7 @@ export default function LostFoundDetail() {
           </div>
 
           {/* ── RIGHT: Info + Actions ──────────────────────────────────────── */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-4)', position: 'sticky', top: 88 }}>
+          <div className="lfd-sidebar">
 
             {/* Title + badges */}
             <div className="card">
@@ -132,17 +133,17 @@ export default function LostFoundDetail() {
                 <Badge value={item.status} />
               </div>
 
-              <h1 style={{ fontSize: 'var(--text-2xl)', fontWeight: 800, marginBottom: 'var(--space-4)' }}>
+              <h1 style={{ fontSize: 'var(--text-2xl)', fontWeight: 800, marginBottom: 'var(--space-4)', overflowWrap: 'break-word', wordBreak: 'break-word' }}>
                 {item.title}
               </h1>
 
               {/* Meta rows */}
               <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-3)' }}>
-                <MetaRow icon="📁" label="Category" value={item.category} />
-                <MetaRow icon="📍" label="Location"  value={item.location} />
-                <MetaRow icon="📅" label="Reported"  value={new Date(item.createdAt).toLocaleDateString('en-IN', { day:'numeric', month:'long', year:'numeric' })} />
+                <MetaRow icon={<Folder size={14} aria-hidden="true" />}   label="Category" value={item.category} />
+                <MetaRow icon={<MapPin size={14} aria-hidden="true" />}    label="Location"  value={item.location} />
+                <MetaRow icon={<Calendar size={14} aria-hidden="true" />}  label="Reported"  value={new Date(item.createdAt).toLocaleDateString('en-IN', { day:'numeric', month:'long', year:'numeric' })} />
                 {item.dateLostOrFound && (
-                  <MetaRow icon="🕐" label="Date lost/found" value={new Date(item.dateLostOrFound).toLocaleDateString('en-IN', { day:'numeric', month:'long', year:'numeric' })} />
+                  <MetaRow icon={<Clock size={14} aria-hidden="true" />} label="Date lost/found" value={new Date(item.dateLostOrFound).toLocaleDateString('en-IN', { day:'numeric', month:'long', year:'numeric' })} />
                 )}
               </div>
             </div>
@@ -172,7 +173,7 @@ export default function LostFoundDetail() {
               {item.contactInfo && (
                 <div style={{ marginTop: 'var(--space-4)', padding: 'var(--space-3)', background: 'var(--bg-elevated)', borderRadius: 'var(--radius-md)' }}>
                   <p style={{ fontSize: 'var(--text-xs)', color: 'var(--text-muted)', marginBottom: 4 }}>Contact</p>
-                  <p style={{ fontSize: 'var(--text-sm)', fontWeight: 600 }}>{item.contactInfo}</p>
+                  <p style={{ fontSize: 'var(--text-sm)', fontWeight: 600, overflowWrap: 'break-word', wordBreak: 'break-word' }}>{item.contactInfo}</p>
                 </div>
               )}
             </div>
@@ -181,8 +182,8 @@ export default function LostFoundDetail() {
             <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-3)' }}>
               {/* Claim button — shown only if item is open and user is NOT the owner */}
               {!isOwner && item.status === 'open' && (
-                <button id="claim-btn" className="btn btn-primary btn-lg" onClick={handleClaim} disabled={claiming}>
-                  {claiming ? 'Claiming…' : '✅ I Found / Claim This Item'}
+                <button id="claim-btn" className="btn btn-primary btn-lg" onClick={handleClaim} disabled={claiming} style={{ width: '100%' }}>
+                  {claiming ? 'Claiming…' : <><CheckCircle size={15} aria-hidden="true" /> I Found / Claim This Item</>}
                 </button>
               )}
 
@@ -195,15 +196,15 @@ export default function LostFoundDetail() {
                   color: item.status === 'claimed' ? '#fbbf24' : '#4ade80',
                   fontWeight: 600,
                 }}>
-                  {item.status === 'claimed' ? '🎉 This item has been claimed' : '✅ Resolved'}
+                  {item.status === 'claimed' ? 'This item has been claimed' : <><CheckCircle size={14} aria-hidden="true" style={{ display: 'inline', verticalAlign: 'middle', marginRight: 4 }} />Resolved</>}
                 </div>
               )}
 
               {/* Owner actions */}
               {isOwner && (
                 <button id="delete-item-btn" className="btn btn-ghost" onClick={handleDelete} disabled={deleting}
-                  style={{ color: 'var(--color-danger)', border: '1px solid rgba(239,68,68,0.3)' }}>
-                  {deleting ? 'Deleting…' : '🗑 Delete this item'}
+                  style={{ color: 'var(--color-danger)', border: '1px solid rgba(239,68,68,0.3)', width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}>
+                  {deleting ? 'Deleting…' : <><Trash2 size={14} aria-hidden="true" /> Delete this item</>}
                 </button>
               )}
             </div>
@@ -211,10 +212,43 @@ export default function LostFoundDetail() {
           </div>
         </div>
 
-        {/* Mobile responsive */}
         <style>{`
-          @media (max-width: 768px) {
-            .detail-grid { grid-template-columns: 1fr !important; }
+          /* Two-column layout */
+          .lfd-grid {
+            display: grid;
+            grid-template-columns: 1fr 380px;
+            gap: var(--space-8);
+            align-items: start;
+          }
+          /* Right sidebar */
+          .lfd-sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-4);
+            position: sticky;
+            top: 88px;
+          }
+          /* Tablet — narrow sidebar */
+          @media (max-width: 900px) {
+            .lfd-grid { grid-template-columns: 1fr 300px; gap: var(--space-5); }
+          }
+          /* Mobile — single column */
+          @media (max-width: 700px) {
+            .lfd-grid   { grid-template-columns: 1fr; gap: var(--space-4); }
+            .lfd-sidebar { position: static; top: auto; }
+          }
+          /* Text overflow guard for all user-generated content */
+          .lfd-grid .card p,
+          .lfd-grid .card h1,
+          .lfd-grid .card h2,
+          .lfd-grid .card h3 {
+            overflow-wrap: break-word;
+            word-break:    break-word;
+          }
+          /* Width guard */
+          .lfd-grid, .lfd-grid * {
+            min-width: 0;
+            box-sizing: border-box;
           }
         `}</style>
       </div>
@@ -223,11 +257,13 @@ export default function LostFoundDetail() {
 }
 
 const MetaRow = ({ icon, label, value }) => (
-  <div style={{ display: 'flex', gap: 'var(--space-3)', alignItems: 'center' }}>
-    <span style={{ fontSize: '1rem', width: 24, textAlign: 'center' }}>{icon}</span>
-    <div>
+  <div style={{ display: 'flex', gap: 'var(--space-3)', alignItems: 'flex-start' }}>
+    <div style={{ width: 24, height: 24, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, color: 'var(--text-muted)' }}>
+      {icon}
+    </div>
+    <div style={{ minWidth: 0 }}>
       <p style={{ fontSize: 'var(--text-xs)', color: 'var(--text-muted)', margin: 0 }}>{label}</p>
-      <p style={{ fontSize: 'var(--text-sm)', fontWeight: 500, margin: 0, textTransform: 'capitalize' }}>{value}</p>
+      <p style={{ fontSize: 'var(--text-sm)', fontWeight: 500, margin: 0, textTransform: 'capitalize', overflowWrap: 'break-word', wordBreak: 'break-word' }}>{value}</p>
     </div>
   </div>
 );
