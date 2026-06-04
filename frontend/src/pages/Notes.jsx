@@ -7,6 +7,7 @@ import toast from 'react-hot-toast';
 import { notesApi } from '../api/notesApi.js';
 import NoteEditor from '../components/notes/NoteEditor.jsx';
 import AISummaryPanel from '../components/notes/AISummaryPanel.jsx';
+import { Calendar, BookOpen, Sparkles, Search } from 'lucide-react';
 
 export default function Notes() {
   const [notes, setNotes] = useState([]);
@@ -174,7 +175,8 @@ export default function Notes() {
                 <span style={{
                   position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)',
                   color: 'var(--text-muted)', fontSize: '0.9rem', pointerEvents: 'none',
-                }}>◎</span>
+                  display: 'flex', alignItems: 'center',
+                }}><Search size={14} aria-hidden="true" /></span>
                 <input
                   id="note-search"
                   type="text"
@@ -206,7 +208,9 @@ export default function Notes() {
                 <div style={{ padding: 'var(--space-8)', textAlign: 'center', color: 'var(--text-muted)', fontSize: 'var(--text-sm)' }}>Loading…</div>
               ) : notes.length === 0 ? (
                 <div style={{ padding: 'var(--space-8)', textAlign: 'center' }}>
-                  <p style={{ fontSize: '2rem', marginBottom: 'var(--space-2)' }}>✦</p>
+                  <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 'var(--space-2)' }}>
+                    <Sparkles size={28} color="rgba(139,92,246,0.5)" aria-hidden="true" />
+                  </div>
                   <p style={{ color: 'var(--text-muted)', fontSize: 'var(--text-sm)' }}>No notes yet.</p>
                   <button onClick={handleCreate} style={{ ...ghostBtn, color: 'var(--color-primary)', marginTop: 'var(--space-3)' }}>
                     Create your first
@@ -268,9 +272,9 @@ export default function Notes() {
 
                   {/* Note meta */}
                   <div style={{ marginTop: 'var(--space-5)', paddingTop: 'var(--space-5)', borderTop: '1px solid var(--bg-elevated)', display: 'flex', flexDirection: 'column', gap: 'var(--space-3)' }}>
-                    <InfoRow icon="📅" label="Created" value={new Date(selectedNote.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })} />
-                    {selectedNote.subject && <InfoRow icon="📚" label="Subject" value={selectedNote.subject} />}
-                    <InfoRow icon="✦" label="AI Runs" value={`${selectedNote.aiHistory?.length || 0} interactions`} />
+                    <InfoRow icon={<Calendar size={14} aria-hidden="true" />} label="Created" value={new Date(selectedNote.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })} />
+                    {selectedNote.subject && <InfoRow icon={<BookOpen size={14} aria-hidden="true" />} label="Subject" value={selectedNote.subject} />}
+                    <InfoRow icon={<Sparkles size={14} aria-hidden="true" />} label="AI Runs" value={`${selectedNote.aiHistory?.length || 0} interactions`} />
                   </div>
 
                   {/* Latest AI Summary block intentionally removed —
@@ -298,7 +302,7 @@ export default function Notes() {
                     onMouseEnter={e => { e.currentTarget.style.background = 'rgba(139,92,246,0.25)'; e.currentTarget.style.boxShadow = '0 0 24px var(--color-primary-glow)'; }}
                     onMouseLeave={e => { e.currentTarget.style.background = 'linear-gradient(135deg, rgba(139,92,246,0.15), rgba(99,102,241,0.10))'; e.currentTarget.style.boxShadow = 'none'; }}
                   >
-                    ✨ Open AI Workspace
+                    <Sparkles size={14} aria-hidden="true" style={{ display: 'inline', verticalAlign: 'middle', marginRight: 4 }} /> Open AI Workspace
                   </button>
                 </div>
               </div>
@@ -317,8 +321,7 @@ export default function Notes() {
                 width: 72, height: 72, borderRadius: '50%',
                 background: 'var(--bg-elevated)',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
-                fontSize: '2rem',
-              }}>✦</div>
+              }} aria-hidden="true"><Sparkles size={28} color="rgba(139,92,246,0.4)" /></div>
               <h2 style={{ fontSize: 'var(--text-xl)', fontWeight: 700, margin: 0, color: 'var(--text-secondary)' }}>
                 Select or create a note
               </h2>
@@ -405,6 +408,11 @@ export default function Notes() {
         }
         @media (min-width: 721px) {
           .notes-mobile-only { display: none; }
+        }
+
+        /* AI workspace panel — mobile */
+        @media (max-width: 720px) {
+          .notes-editor-card { padding: var(--space-4); min-height: 0; }
         }
       `}</style>
     </div>
