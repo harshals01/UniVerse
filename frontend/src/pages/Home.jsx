@@ -5,23 +5,22 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext.jsx';
 import {
   PackageSearch, ShoppingBag, Sparkles,
-  ArrowUpRight, Plus, TrendingUp, Clock, Zap,
+  ArrowUpRight, Plus, TrendingUp, Clock, Zap, Hand,
 } from 'lucide-react';
 
 export default function Home() {
-  const { user }  = useAuth();
-  const navigate  = useNavigate();
-  const hour      = new Date().getHours();
-  const greeting  = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening';
-  const first     = user?.name?.split(' ')[0] ?? 'there';
+  const { user } = useAuth();
+  const navigate = useNavigate();
+  const hour = new Date().getHours();
+  const greeting = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening';
+  const first = user?.name?.split(' ')[0] ?? 'there';
 
   return (
     <div className="page">
 
-      {/* ── Welcome Banner ─────────────────────────────────────────────────── */}
       <div style={{ marginBottom: 28 }}>
-        <p style={{ color: 'var(--text-muted)', fontSize: 'var(--text-sm)', marginBottom: 6 }}>
-          {greeting} 👋
+        <p style={{ color: 'var(--text-muted)', fontSize: 'var(--text-sm)', marginBottom: 6, display: 'flex', alignItems: 'center', gap: 6 }}>
+          {greeting} <Hand size={14} style={{ display: 'inline', verticalAlign: 'middle', color: 'var(--text-muted)' }} aria-hidden="true" />
         </p>
         <h1 style={{ fontSize: 'var(--text-3xl)', fontWeight: 800, letterSpacing: '-0.02em', lineHeight: 1.2 }}>
           Welcome back,{' '}
@@ -32,10 +31,8 @@ export default function Home() {
         </p>
       </div>
 
-      {/* ── Bento Grid ─────────────────────────────────────────────────────── */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gridTemplateRows: 'auto', gap: 16 }}>
+      <div className="bento-grid" style={{ gap: 16 }}>
 
-        {/* ── Lost & Found — wide card ── */}
         <BentoCard
           style={{ gridColumn: 'span 2' }}
           gradient="linear-gradient(135deg, rgba(244,63,94,0.12) 0%, rgba(139,92,246,0.08) 100%)"
@@ -66,7 +63,6 @@ export default function Home() {
           </div>
         </BentoCard>
 
-        {/* ── AI Notes — tall card ── */}
         <BentoCard
           style={{ gridRow: 'span 2' }}
           gradient="linear-gradient(135deg, rgba(139,92,246,0.15) 0%, rgba(6,182,212,0.08) 100%)"
@@ -141,7 +137,6 @@ export default function Home() {
 
       </div>
 
-      {/* ── Quick tip ──────────────────────────────────────────────────────── */}
       <div style={{
         marginTop: 20,
         padding: '14px 20px',
@@ -157,9 +152,18 @@ export default function Home() {
         </p>
       </div>
 
-      {/* Responsive bento */}
       <style>{`
-        @media (max-width: 768px) {
+        .bento-grid {
+          display: grid;
+          grid-template-columns: repeat(3, 1fr);
+          grid-template-rows: auto;
+        }
+        @media (max-width: 900px) {
+          .bento-grid { grid-template-columns: repeat(2, 1fr); }
+          .bento-grid > * { grid-column: span 1 !important; grid-row: span 1 !important; }
+        }
+        @media (max-width: 600px) {
+          .bento-grid { grid-template-columns: 1fr; }
           .bento-grid > * { grid-column: span 1 !important; grid-row: span 1 !important; }
         }
       `}</style>
@@ -167,34 +171,33 @@ export default function Home() {
   );
 }
 
-/* ── Sub-components ───────────────────────────────────────────────────────── */
 function BentoCard({ children, style = {}, gradient, glow, onClick }) {
   return (
     <div
       onClick={onClick}
       style={{
-        background:      `${gradient}, var(--bg-surface)`,
-        border:          '1px solid var(--border-glass)',
-        borderRadius:    'var(--radius-xl)',
-        padding:         24,
-        backdropFilter:  'var(--blur-md)',
-        boxShadow:       'var(--shadow-card)',
-        cursor:          'pointer',
-        transition:      'all var(--transition-base)',
-        display:         'flex',
-        flexDirection:   'column',
-        position:        'relative',
-        overflow:        'hidden',
+        background: `${gradient}, var(--bg-surface)`,
+        border: '1px solid var(--border-glass)',
+        borderRadius: 'var(--radius-xl)',
+        padding: 24,
+        backdropFilter: 'var(--blur-md)',
+        boxShadow: 'var(--shadow-card)',
+        cursor: 'pointer',
+        transition: 'all var(--transition-base)',
+        display: 'flex',
+        flexDirection: 'column',
+        position: 'relative',
+        overflow: 'hidden',
         ...style,
       }}
       onMouseEnter={e => {
-        e.currentTarget.style.transform   = 'translateY(-3px)';
-        e.currentTarget.style.boxShadow   = `0 16px 48px rgba(0,0,0,0.55), 0 0 0 1px ${glow}`;
+        e.currentTarget.style.transform = 'translateY(-3px)';
+        e.currentTarget.style.boxShadow = `0 16px 48px rgba(0,0,0,0.55), 0 0 0 1px ${glow}`;
         e.currentTarget.style.borderColor = 'rgba(255,255,255,0.12)';
       }}
       onMouseLeave={e => {
-        e.currentTarget.style.transform   = 'translateY(0)';
-        e.currentTarget.style.boxShadow   = 'var(--shadow-card)';
+        e.currentTarget.style.transform = 'translateY(0)';
+        e.currentTarget.style.boxShadow = 'var(--shadow-card)';
         e.currentTarget.style.borderColor = 'var(--border-glass)';
       }}
     >
