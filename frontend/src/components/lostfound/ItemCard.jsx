@@ -58,7 +58,7 @@ export default function ItemCard({ item }) {
           </span>
 
           {/* Title */}
-          <h3 style={{ fontSize:'var(--text-base)',fontWeight:700,margin:0,whiteSpace:'nowrap',overflow:'hidden',textOverflow:'ellipsis',color:'var(--text-primary)' }}>
+          <h3 style={{ fontSize:'var(--text-base)',fontWeight:700,margin:0,overflow:'hidden',textOverflow:'ellipsis',color:'var(--text-primary)',whiteSpace:'nowrap',minWidth:0 }}>
             {item.title}
           </h3>
 
@@ -119,9 +119,12 @@ export default function ItemCard({ item }) {
           box-shadow:      var(--shadow-card);
           position:        relative;
           overflow:        hidden;
+          min-width:       0;
+          box-sizing:      border-box;
+          width:           100%;
         }
-        @media (max-width: 560px) {
-          .lf-item-card { flex-direction: column; align-items: flex-start; }
+        @media (max-width: 600px) {
+          .lf-item-card { flex-direction: column; align-items: flex-start; padding: 14px 16px; }
           .lf-item-card > div:last-child { flex-direction: row; align-items: center; width: 100%; justify-content: space-between; }
         }
       `}</style>

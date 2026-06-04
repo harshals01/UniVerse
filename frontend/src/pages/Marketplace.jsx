@@ -9,7 +9,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
-import { Plus } from 'lucide-react';
+import { Plus, ShoppingBag } from 'lucide-react';
 import { marketplaceApi } from '../api/marketplaceApi.js';
 import ProductCard from '../components/marketplace/ProductCard.jsx';
 import CategoryFilter from '../components/marketplace/CategoryFilter.jsx';
@@ -93,7 +93,7 @@ export default function Marketplace() {
           <PageError message={fetchError} onRetry={() => fetchListings(filters, page)} />
         ) : listings.length === 0 ? (
           <EmptyState
-            icon="◈"
+            icon={<ShoppingBag size={28} color="rgba(139,92,246,0.5)" aria-hidden="true" />}
             title="No listings found"
             description="Try adjusting your filters, or be the first to list something."
             action={{ label: '+ Sell an item', onClick: () => navigate('/marketplace/create') }}

@@ -7,8 +7,10 @@
  * ─────────────────────────────────────────────────────────────────────────────
  */
 
+import { Search } from 'lucide-react';
+
 const CATEGORIES   = ['all', 'electronics', 'clothing', 'accessories', 'books', 'documents', 'keys', 'bags', 'sports', 'other'];
-const CONDITIONS   = [{ value: '', label: 'All' }, { value: 'new', label: '✨ New' }, { value: 'like-new', label: '👌 Like-new' }, { value: 'good', label: '👍 Good' }, { value: 'fair', label: '🔄 Fair' }];
+const CONDITIONS   = [{ value: '', label: 'All' }, { value: 'new', label: 'New' }, { value: 'like-new', label: 'Like-new' }, { value: 'good', label: 'Good' }, { value: 'fair', label: 'Fair' }];
 const SORT_OPTIONS = [
   { value: 'newest',     label: 'Newest first'  },
   { value: 'price_asc',  label: 'Price: Low → High' },
@@ -29,9 +31,10 @@ export default function CategoryFilter({ filters, onChange }) {
         <div style={{ flex: 1, minWidth: 220, position: 'relative' }}>
           <span style={{
             position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)',
-            color: 'var(--text-muted)', fontSize: '1rem', pointerEvents: 'none',
+            color: 'var(--text-muted)', pointerEvents: 'none',
+            display: 'flex', alignItems: 'center',
           }}>
-            ◎
+            <Search size={14} aria-hidden="true" />
           </span>
           <input
             type="text"

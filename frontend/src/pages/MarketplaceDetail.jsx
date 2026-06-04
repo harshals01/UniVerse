@@ -16,6 +16,7 @@ import { marketplaceApi } from '../api/marketplaceApi.js';
 import { useAuth } from '../context/AuthContext.jsx';
 import Badge from '../components/common/Badge.jsx';
 import { SkeletonDetailPage } from '../components/common/Skeleton.jsx';
+import { Folder, MapPin, Calendar, Mail, Check, Trash2 } from 'lucide-react';
 
 const FALLBACK = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="800" height="400" viewBox="0 0 800 400"%3E%3Crect width="800" height="400" fill="%23202020"/%3E%3Ctext x="50%25" y="50%25" fill="%23444" font-size="80" text-anchor="middle" dominant-baseline="middle"%3E◈%3C/text%3E%3C/svg%3E';
 
@@ -205,9 +206,9 @@ export default function MarketplaceDetail() {
 
               {/* Meta rows */}
               <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-3)' }}>
-                <MetaRow icon="📁" label="Category" value={listing.category} />
-                {listing.location && <MetaRow icon="📍" label="Pickup"   value={listing.location} />}
-                <MetaRow icon="📅" label="Listed" value={new Date(listing.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' })} />
+                <MetaRow icon={<Folder size={14} aria-hidden="true" />}  label="Category" value={listing.category} />
+                {listing.location && <MetaRow icon={<MapPin size={14} aria-hidden="true" />}   label="Pickup"   value={listing.location} />}
+                <MetaRow icon={<Calendar size={14} aria-hidden="true" />} label="Listed" value={new Date(listing.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' })} />
               </div>
             </div>
 
@@ -273,7 +274,7 @@ export default function MarketplaceDetail() {
                   onMouseEnter={e => { e.currentTarget.style.background = 'var(--color-primary-dark)'; e.currentTarget.style.boxShadow = '0 0 24px var(--color-primary-glow)'; }}
                   onMouseLeave={e => { e.currentTarget.style.background = 'var(--color-primary)'; e.currentTarget.style.boxShadow = 'none'; }}
                 >
-                  ✉ Contact Seller
+                  <Mail size={15} aria-hidden="true" /> Contact Seller
                 </button>
               )}
 
@@ -304,7 +305,7 @@ export default function MarketplaceDetail() {
                     border:  '1px solid rgba(34,197,94,0.3)',
                   }}
                 >
-                  {marking ? 'Updating…' : '✓ Mark as Sold'}
+                  {marking ? 'Updating…' : <><Check size={14} aria-hidden="true" /> Mark as Sold</>}
                 </button>
               )}
 
@@ -320,7 +321,7 @@ export default function MarketplaceDetail() {
                     border: '1px solid rgba(239,68,68,0.2)',
                   }}
                 >
-                  {deleting ? 'Deleting…' : '⊗ Delete Listing'}
+                  {deleting ? 'Deleting…' : <><Trash2 size={14} aria-hidden="true" /> Delete Listing</>}
                 </button>
               )}
             </div>

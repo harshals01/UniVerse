@@ -11,13 +11,14 @@ import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import { marketplaceApi } from '../api/marketplaceApi.js';
 import Spinner from '../components/common/Spinner.jsx';
+import { Image, Pencil, AlertTriangle, Tag } from 'lucide-react';
 
 const CATEGORIES = ['electronics', 'clothing', 'accessories', 'books', 'documents', 'keys', 'bags', 'sports', 'other'];
 const CONDITIONS = [
-  { value: 'new',      label: '✨ New',       desc: 'Unused, in original packaging' },
-  { value: 'like-new', label: '👌 Like-new',  desc: 'Used once or twice, no damage' },
-  { value: 'good',     label: '👍 Good',       desc: 'Gently used, minor wear' },
-  { value: 'fair',     label: '🔄 Fair',       desc: 'Visible wear, fully functional' },
+  { value: 'new',      label: 'New',      desc: 'Unused, in original packaging' },
+  { value: 'like-new', label: 'Like-new', desc: 'Used once or twice, no damage' },
+  { value: 'good',     label: 'Good',     desc: 'Gently used, minor wear' },
+  { value: 'fair',     label: 'Fair',     desc: 'Visible wear, fully functional' },
 ];
 
 export default function MarketplaceCreate() {
@@ -134,9 +135,9 @@ export default function MarketplaceCreate() {
                         width: 64, height: 64, borderRadius: '50%',
                         background: 'var(--bg-elevated)',
                         display: 'flex', alignItems: 'center', justifyContent: 'center',
-                        fontSize: '1.8rem', margin: '0 auto var(--space-4)',
-                      }}>
-                        📸
+                        margin: '0 auto var(--space-4)',
+                      }} aria-hidden="true">
+                        <Image size={28} color="var(--text-muted)" />
                       </div>
                       <p style={{ fontWeight: 600, color: 'var(--text-primary)', margin: '0 0 4px' }}>
                         Drop photo here or click to upload
@@ -164,7 +165,7 @@ export default function MarketplaceCreate() {
                         borderRadius: 'var(--radius-pill)',
                         fontSize: 'var(--text-xs)', fontWeight: 600,
                       }}>
-                        ✎ Change photo
+                        <Pencil size={11} style={{ display: 'inline', verticalAlign: 'middle', marginRight: 4 }} aria-hidden="true" />Change photo
                       </span>
                     </div>
                   )}
@@ -300,7 +301,7 @@ export default function MarketplaceCreate() {
                   onMouseEnter={e => { if (!loading) { e.currentTarget.style.background = 'var(--color-primary-dark)'; e.currentTarget.style.boxShadow = '0 0 24px var(--color-primary-glow)'; }}}
                   onMouseLeave={e => { e.currentTarget.style.background = 'var(--color-primary)'; e.currentTarget.style.boxShadow = 'none'; }}
                 >
-                  {loading ? <Spinner size="sm" /> : '◈ Create Listing'}
+                  {loading ? <Spinner size="sm" /> : 'Create Listing'}
                 </button>
               </div>
             </div>
@@ -325,7 +326,7 @@ export default function MarketplaceCreate() {
 
 const Err = ({ msg }) => (
   <span style={{ color: 'var(--color-danger)', fontSize: 'var(--text-xs)', display: 'flex', alignItems: 'center', gap: 4 }}>
-    ⚠ {msg}
+    <AlertTriangle size={11} aria-hidden="true" /> {msg}
   </span>
 );
 

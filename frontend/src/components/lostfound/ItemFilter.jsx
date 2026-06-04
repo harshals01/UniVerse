@@ -7,6 +7,8 @@
  * ─────────────────────────────────────────────────────────────────────────────
  */
 
+import { Search } from 'lucide-react';
+
 const TYPES      = [{ value: '', label: 'All' }, { value: 'lost', label: 'Lost' }, { value: 'found', label: 'Found' }];
 const STATUSES   = [{ value: '', label: 'All' }, { value: 'open', label: 'Open' }, { value: 'claimed', label: 'Claimed' }];
 const CATEGORIES = ['all', 'electronics', 'clothing', 'accessories', 'books', 'documents', 'keys', 'bags', 'sports', 'other'];
@@ -25,11 +27,14 @@ export default function ItemFilter({ filters, onChange }) {
     <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-4)', marginBottom: 'var(--space-6)' }}>
 
       {/* ── Search ──────────────────────────────────────────────────────────── */}
-      <div style={{ position: 'relative', maxWidth: 520 }}>
+      <div style={{ position: 'relative', width: '100%', maxWidth: 520 }}>
         <span style={{
           position: 'absolute', left: 16, top: '50%', transform: 'translateY(-50%)',
-          color: 'var(--text-muted)', fontSize: '1rem', pointerEvents: 'none',
-        }}>◎</span>
+          color: 'var(--text-muted)', pointerEvents: 'none',
+          display: 'flex', alignItems: 'center',
+        }}>
+          <Search size={14} aria-hidden="true" />
+        </span>
         <input
           type="text"
           placeholder="Search by title, description, or location…"

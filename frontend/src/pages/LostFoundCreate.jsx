@@ -7,6 +7,7 @@ import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import { lostFoundApi } from '../api/lostFoundApi.js';
 import Spinner from '../components/common/Spinner.jsx';
+import { ImageIcon, AlertTriangle, Radio, Megaphone } from 'lucide-react';
 
 const CATEGORIES = ['electronics', 'clothing', 'accessories', 'books', 'documents', 'keys', 'bags', 'sports', 'other'];
 
@@ -86,9 +87,13 @@ export default function LostFoundCreate() {
                 {['lost', 'found'].map(t => (
                   <button key={t} type="button"
                     className={`btn btn-lg ${form.type === t ? 'btn-primary' : 'btn-outline'}`}
-                    style={{ flex: 1, textTransform: 'capitalize' }}
+                    style={{ flex: 1, textTransform: 'capitalize', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}
                     onClick={() => setForm(f => ({ ...f, type: t }))}>
-                    {t === 'lost' ? '🔴 Lost' : '🟢 Found'}
+                    <Radio size={14}
+                      style={{ color: t === 'lost' ? '#FB7185' : '#34D399', flexShrink: 0 }}
+                      aria-hidden="true"
+                    />
+                    {t === 'lost' ? 'Lost' : 'Found'}
                   </button>
                 ))}
               </div>
@@ -111,7 +116,7 @@ export default function LostFoundCreate() {
             </div>
 
             {/* Category + Location row */}
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--space-4)' }}>
+            <div className="lf-create-row">
               <div className="form-group">
                 <label htmlFor="lf-cat" className="form-label">Category *</label>
                 <select id="lf-cat" name="category" value={form.category} onChange={change}>
@@ -154,21 +159,38 @@ export default function LostFoundCreate() {
                 )}
                 <input id="lf-image" type="file" accept="image/jpeg,image/png,image/webp" onChange={handleImage}
                   style={{ position: 'absolute', inset: 0, opacity: 0, cursor: 'pointer', width: '100%', height: '100%' }} />
-                <p style={{ color: 'var(--text-muted)', fontSize: 'var(--text-sm)' }}>
-                  {preview ? '✅ Image selected — click to change' : '📸 Click to upload a photo'}
+                <p style={{ color: 'var(--text-muted)', fontSize: 'var(--text-sm)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}>
+                  {preview
+                    ? <><ImageIcon size={14} aria-hidden="true" /> Image selected — click to change</>
+                    : <><ImageIcon size={14} aria-hidden="true" /> Click to upload a photo</>}
                 </p>
               </div>
             </div>
 
             {/* Submit */}
             <button id="lf-submit" type="submit" className="btn btn-primary btn-lg" disabled={loading} style={{ width: '100%' }}>
-              {loading ? <Spinner size="sm" /> : `📢 Report ${form.type === 'lost' ? 'Lost' : 'Found'} Item`}
+              {loading ? <Spinner size="sm" /> : <><Megaphone size={16} /> Report {form.type === 'lost' ? 'Lost' : 'Found'} Item</>}
             </button>
           </div>
         </form>
       </div>
+
+      <style>{`
+        .lf-create-row {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: var(--space-4);
+        }
+        @media (max-width: 560px) {
+          .lf-create-row { grid-template-columns: 1fr; }
+        }
+      `}</style>
     </div>
   );
 }
 
-const Err = ({ msg }) => <span style={{ color: 'var(--color-danger)', fontSize: 'var(--text-xs)' }}>⚠ {msg}</span>;
+const Err = ({ msg }) => (
+  <span style={{ color: 'var(--color-danger)', fontSize: 'var(--text-xs)', display: 'flex', alignItems: 'center', gap: 4 }}>
+    <AlertTriangle size={11} aria-hidden="true" /> {msg}
+  </span>
+);

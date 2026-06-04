@@ -9,7 +9,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
-import { Plus } from 'lucide-react';
+import { Plus, PackageSearch } from 'lucide-react';
 import { lostFoundApi } from '../api/lostFoundApi.js';
 import ItemCard from '../components/lostfound/ItemCard.jsx';
 import ItemFilter from '../components/lostfound/ItemFilter.jsx';
@@ -100,7 +100,7 @@ export default function LostFound() {
           <PageError message={fetchError} onRetry={() => fetchItems(filters, page)} />
         ) : items.length === 0 ? (
           <EmptyState
-            icon="◎"
+            icon={<PackageSearch size={28} color="rgba(139,92,246,0.5)" aria-hidden="true" />}
             title="No items found"
             description="Try adjusting your filters, or be the first to report an item."
             action={{ label: '+ Report an item', onClick: () => navigate('/lostfound/create') }}
