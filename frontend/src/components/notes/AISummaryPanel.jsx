@@ -5,6 +5,7 @@ import { useState, useRef, useEffect } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import toast from 'react-hot-toast';
+import { Bot, Sparkles, Copy, AlertTriangle, Send, X, Zap } from 'lucide-react';
 
 const MODE_OPTIONS = [
   { value: 'notes', label: 'Generate Notes', desc: 'Create structured study notes from your topic', placeholder: 'e.g. "Explain Newton\'s Laws of Motion"' },
@@ -65,7 +66,9 @@ export default function AISummaryPanel({
     return (
       <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-4)' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-3)' }}>
-          <span style={{ fontSize: '1.3rem' }}>🤖</span>
+          <div style={{ width: 32, height: 32, borderRadius: 'var(--radius-md)', background: 'linear-gradient(135deg, var(--color-primary), var(--color-accent))', display: 'flex', alignItems: 'center', justifyContent: 'center' }} aria-hidden="true">
+            <Bot size={16} color="#fff" />
+          </div>
           <div>
             <h3 style={{ fontSize: 'var(--text-base)', fontWeight: 700, margin: 0 }}>AI Assistant</h3>
             <p style={{ color: 'var(--text-muted)', fontSize: 'var(--text-xs)', margin: 0 }}>{currentMode.desc}</p>
@@ -93,16 +96,16 @@ export default function AISummaryPanel({
         <button id="ai-generate-btn" className="btn btn-primary btn-lg"
           onClick={handleGenerate} disabled={loading || !prompt.trim()}
           style={{ position: 'relative', overflow: 'hidden' }}>
-          {loading ? <><LoadingDots /> Generating…</> : '✨ Generate'}
+          {loading ? <><LoadingDots /> Generating…</> : <><Sparkles size={15} aria-hidden="true" /> Generate</>}
         </button>
 
         {messages.length > 0 && messages[messages.length - 1].role === 'ai' && (
           <div style={{ background: 'var(--bg-elevated)', border: '1px solid var(--border-primary)', borderRadius: 'var(--radius-lg)', padding: 'var(--space-4)' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 'var(--space-3)' }}>
               <span style={{ fontSize: 'var(--text-xs)', color: 'var(--color-primary-light)', fontWeight: 600 }}>
-                ✨ Latest Result
+                <Sparkles size={11} style={{ display: 'inline', verticalAlign: 'middle', marginRight: 3 }} aria-hidden="true" />Latest Result
               </span>
-              <button className="btn btn-ghost btn-sm" onClick={() => copyText(messages[messages.length - 1].text)}>📋</button>
+              <button className="btn btn-ghost btn-sm" onClick={() => copyText(messages[messages.length - 1].text)} aria-label="Copy result"><Copy size={13} /></button>
             </div>
             <MarkdownContent content={messages[messages.length - 1].text} style={{ fontSize: 'var(--text-xs)' }} />
           </div>
@@ -118,7 +121,7 @@ export default function AISummaryPanel({
       background: 'var(--bg-surface)',
       border: '1px solid var(--border-primary)',
       borderRadius: 'var(--radius-xl)',
-      overflow: 'visible',
+      overflow: 'hidden',
       height: '85vh',
       minHeight: 0,
       boxShadow: '0 0 40px rgba(139,92,246,0.12)',
@@ -136,8 +139,8 @@ export default function AISummaryPanel({
             width: 40, height: 40, borderRadius: 'var(--radius-md)',
             background: 'linear-gradient(135deg, var(--color-primary), var(--color-accent))',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
-            fontSize: '1.2rem', boxShadow: '0 0 20px var(--color-primary-glow)',
-          }}>🤖</div>
+            boxShadow: '0 0 20px var(--color-primary-glow)',
+          }} aria-hidden="true"><Bot size={20} color="#fff" /></div>
           <div>
             <h2 style={{ fontSize: 'var(--text-lg)', fontWeight: 800, margin: 0, letterSpacing: '-0.01em' }}>AI Study Workspace</h2>
             <p style={{ color: 'var(--text-muted)', fontSize: 'var(--text-xs)', margin: 0 }}>
@@ -154,7 +157,7 @@ export default function AISummaryPanel({
         </div>
 
         {/* Mode tabs */}
-        <div style={{ display: 'flex', gap: 'var(--space-2)' }}>
+        <div className="aiws-mode-tabs" style={{ display: 'flex', gap: 'var(--space-2)' }}>
           {MODE_OPTIONS.map(m => (
             <button key={m.value} id={`aiws-mode-${m.value}`}
               onClick={() => setMode(m.value)}
@@ -197,9 +200,8 @@ export default function AISummaryPanel({
               background: 'linear-gradient(135deg, rgba(139,92,246,0.2), rgba(99,102,241,0.1))',
               border: '1px solid var(--border-primary)',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
-              fontSize: '2.2rem',
               boxShadow: '0 0 30px rgba(139,92,246,0.15)',
-            }}>✨</div>
+            }} aria-hidden="true"><Sparkles size={32} color="#A78BFA" /></div>
             <div style={{ textAlign: 'center' }}>
               <p style={{ fontSize: 'var(--text-base)', fontWeight: 700, color: 'var(--text-secondary)', margin: '0 0 var(--space-2)' }}>
                 {currentMode.desc}
@@ -249,8 +251,8 @@ export default function AISummaryPanel({
           );
 
           if (msg.role === 'error') return (
-            <div key={i} style={{ padding: 'var(--space-4)', background: 'rgba(244,63,94,0.1)', border: '1px solid rgba(244,63,94,0.3)', borderRadius: 'var(--radius-lg)', color: 'var(--color-danger)', fontSize: 'var(--text-sm)' }}>
-              ⚠ {msg.text}
+            <div key={i} style={{ padding: 'var(--space-4)', background: 'rgba(244,63,94,0.1)', border: '1px solid rgba(244,63,94,0.3)', borderRadius: 'var(--radius-lg)', color: 'var(--color-danger)', fontSize: 'var(--text-sm)', display: 'flex', alignItems: 'center', gap: 'var(--space-2)' }}>
+              <AlertTriangle size={15} aria-hidden="true" /> {msg.text}
             </div>
           );
 
@@ -269,14 +271,14 @@ export default function AISummaryPanel({
                 display: 'flex', alignItems: 'center', gap: 'var(--space-3)',
                 background: 'linear-gradient(90deg, rgba(139,92,246,0.08), transparent)',
               }}>
-                <span style={{ fontSize: '1rem' }}>🤖</span>
+                <Bot size={15} style={{ flexShrink: 0 }} aria-hidden="true" />
                 <span style={{ fontSize: 'var(--text-xs)', color: 'var(--color-primary-light)', fontWeight: 700 }}>
-                  ✨ {MODE_OPTIONS.find(m => m.value === msg.mode)?.label}
+                  <Sparkles size={10} style={{ display: 'inline', verticalAlign: 'middle', marginRight: 3 }} aria-hidden="true" />{MODE_OPTIONS.find(m => m.value === msg.mode)?.label}
                 </span>
                 {msg.provider && <span style={{ fontSize: 'var(--text-xs)', color: 'var(--text-muted)' }}>· {msg.provider}</span>}
                 {msg.tokens && <span style={{ fontSize: 'var(--text-xs)', color: 'var(--text-muted)' }}>· ~{msg.tokens} tokens</span>}
                 <div style={{ marginLeft: 'auto', display: 'flex', gap: 'var(--space-2)' }}>
-                  <button className="btn btn-ghost btn-sm" onClick={() => copyText(msg.text)} title="Copy">📋</button>
+                  <button className="btn btn-ghost btn-sm" onClick={() => copyText(msg.text)} title="Copy" aria-label="Copy AI response"><Copy size={13} /></button>
                   {onApplyToNote && (
                     <button
                       className="btn btn-sm"
@@ -312,7 +314,7 @@ export default function AISummaryPanel({
             borderRadius: 'var(--radius-lg)', width: 'fit-content',
             boxShadow: '0 0 20px rgba(139,92,246,0.1)',
           }}>
-            <span style={{ fontSize: '1rem' }}>🤖</span>
+            <Bot size={16} aria-hidden="true" style={{ color: 'var(--color-primary-light)' }} />
             <LoadingDots />
             <span style={{ fontSize: 'var(--text-sm)', color: 'var(--text-muted)' }}>Generating…</span>
           </div>
@@ -331,7 +333,7 @@ export default function AISummaryPanel({
         <p style={{ fontSize: 'var(--text-xs)', color: 'var(--text-muted)', margin: '0 0 var(--space-2)', fontWeight: 600 }}>
           {currentMode.desc}
         </p>
-        <div style={{ display: 'flex', gap: 'var(--space-3)', alignItems: 'flex-end' }}>
+        <div className="aiws-input-row" style={{ display: 'flex', gap: 'var(--space-3)', alignItems: 'flex-end' }}>
           <textarea
             id="aiws-prompt"
             placeholder={currentMode.placeholder}
@@ -353,8 +355,9 @@ export default function AISummaryPanel({
             id="aiws-generate-btn"
             onClick={handleGenerate}
             disabled={loading || !prompt.trim()}
+            aria-label="Generate AI response"
             style={{
-              padding: 'var(--space-3) var(--space-6)',
+              padding: 'var(--space-3) var(--space-5)',
               borderRadius: 'var(--radius-lg)',
               background: loading || !prompt.trim()
                 ? 'var(--bg-surface)'
@@ -366,8 +369,9 @@ export default function AISummaryPanel({
               boxShadow: loading || !prompt.trim() ? 'none' : '0 4px 20px rgba(139,92,246,0.35)',
               transition: 'all var(--transition-fast)',
               flexShrink: 0,
+              display: 'flex', alignItems: 'center', gap: 6,
             }}>
-            {loading ? '⏳ Thinking…' : 'Generate'}
+            {loading ? <><LoadingDots /><span>Thinking…</span></> : <><Send size={14} aria-hidden="true" /><span>Generate</span></>}
           </button>
         </div>
         <p style={{ fontSize: 'var(--text-xs)', color: 'var(--text-muted)', margin: 'var(--space-2) 0 0' }}>
@@ -425,6 +429,16 @@ export default function AISummaryPanel({
         }
         /* Loading animation */
         @keyframes bounce { 0%,80%,100%{transform:scale(0)} 40%{transform:scale(1)} }
+
+        /* ── AI Workspace Mobile Responsive ── */
+        @media (max-width: 600px) {
+          /* Mode tabs: wrap on small screens */
+          .aiws-mode-tabs { flex-wrap: wrap !important; gap: 6px !important; }
+          /* Prompt area: stack textarea + button vertically */
+          .aiws-input-row { flex-direction: column !important; align-items: stretch !important; }
+          .aiws-input-row textarea { min-height: 44px !important; }
+          .aiws-input-row button { width: 100% !important; justify-content: center !important; }
+        }
       `}</style>
     </div>
   );
@@ -445,7 +459,7 @@ function AIHistoryCard({ entry, onCopy, onApply }) {
         <span style={{ fontSize: 'var(--text-xs)', color: 'var(--text-muted)', marginLeft: 'auto' }}>
           {new Date(entry.createdAt).toLocaleDateString()}
         </span>
-        <button className="btn btn-ghost btn-sm" onClick={() => onCopy(entry.response)}>📋</button>
+        <button className="btn btn-ghost btn-sm" onClick={() => onCopy(entry.response)} aria-label="Copy history entry"><Copy size={13} /></button>
         {onApply && <button className="btn btn-ghost btn-sm" onClick={() => onApply(entry.response)}>↗</button>}
       </div>
       <MarkdownContent
