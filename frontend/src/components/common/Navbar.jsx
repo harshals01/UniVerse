@@ -9,15 +9,16 @@ import { useAuth } from '../../context/AuthContext.jsx';
 import {
   LayoutDashboard, ShoppingBag, PackageSearch,
   Sparkles, UserCircle, LogOut, Bell, X, Menu,
-  ChevronDown,
+  ChevronDown, Bot,
 } from 'lucide-react';
 import Logo from './Logo';
 
 const NAV_LINKS = [
-  { to: '/',            label: 'Dashboard',   Icon: LayoutDashboard, id: 'nav-home'        },
+  { to: '/',            label: 'Dashboard',    Icon: LayoutDashboard, id: 'nav-home'        },
   { to: '/lostfound',   label: 'Lost & Found', Icon: PackageSearch,   id: 'nav-lostfound'   },
   { to: '/marketplace', label: 'Marketplace',  Icon: ShoppingBag,     id: 'nav-marketplace' },
   { to: '/notes',       label: 'AI Notes',     Icon: Sparkles,        id: 'nav-notes'       },
+  { to: '/assistant',   label: 'AI Assistant', Icon: Bot,             id: 'nav-assistant'   },
 ];
 
 export default function Navbar() {
@@ -38,6 +39,8 @@ export default function Navbar() {
 
   const pageTitle = location.pathname === '/profile'
     ? 'Profile'
+    : location.pathname === '/assistant'
+    ? 'AI Assistant'
     : NAV_LINKS.find(l =>
         l.to === '/' ? location.pathname === '/' : location.pathname.startsWith(l.to)
       )?.label ?? 'UniVerse';

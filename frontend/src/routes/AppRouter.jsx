@@ -27,6 +27,9 @@ import MarketplaceDetail from '../pages/MarketplaceDetail.jsx';
 // AI Notes
 import Notes from '../pages/Notes.jsx';
 
+// AI Assistant
+import AIAssistant from '../pages/AIAssistant.jsx';
+
 // Profile
 import Profile from '../pages/Profile.jsx';
 
@@ -95,6 +98,9 @@ export default function AppRouter() {
 
       {/* ── AI Notes ───────────────────────────────────────────────────────── */}
       <Route path="/notes" element={<Page element={<Notes />} />} />
+
+      {/* ── AI Assistant ────────────────────────────────────────────── */}
+      <Route path="/assistant" element={<Page element={<AIAssistant />} />} />
 
       {/* ── Profile ────────────────────────────────────────────────────────── */}
       <Route path="/profile" element={<Page element={<Profile />} />} />
