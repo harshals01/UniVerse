@@ -67,7 +67,7 @@ export default function NoteEditor({ note, onSave, saving, insertContent, onInse
           border: 'none',
           resize: 'none',
           color: 'var(--text-primary)',
-          padding: 0,
+          padding: 'var(--space-2) var(--space-3)',
           outline: 'none',
           fontFamily: 'inherit',
         }}
