@@ -1,22 +1,3 @@
-/**
- * services/aiService.js
- * ─────────────────────────────────────────────────────────────────────────────
- * Generic AI service layer for UniVerse.
- *
- * Architecture decisions:
- *  - ONE public function: aiService.generate(prompt, options)
- *  - All modules (notes, summarize, quiz) call the same function
- *  - Uses Groq API (LLaMA 3) for extremely fast, real-time generation
- *  - Fails fast: throws an error if GROQ_API_KEY is missing
- *
- * Supported modes (via options.mode):
- *  'notes'     → generate structured study notes from a topic/text
- *  'summarize' → condense existing content into bullet summary
- *  'quiz'      → generate Q&A pairs (future use)
- * ─────────────────────────────────────────────────────────────────────────────
- */
-
-
 // ── Main public interface ─────────────────────────────────────────────────────
 const aiService = {
   /**
@@ -58,9 +39,6 @@ const aiService = {
     return await aiService._groqGenerate(prompt, { mode, systemContext });
   },
 
-  // ── Mock provider removed ───────────────────────────────────────────────────
-
-  // ── Groq provider (active when GROQ_API_KEY is set) ─────────────────────────
   /**
    * @param {string|null} prompt         — null when using multi-turn messages
    * @param {object}      opts
@@ -99,9 +77,9 @@ Respond clearly and helpfully. Use markdown formatting when it improves readabil
     const groqMessages = messages && messages.length > 0
       ? [{ role: 'system', content: fullSystem }, ...messages]
       : [
-          { role: 'system', content: fullSystem },
-          { role: 'user',   content: prompt },
-        ];
+        { role: 'system', content: fullSystem },
+        { role: 'user', content: prompt },
+      ];
 
     const response = await groq.chat.completions.create({
       messages: groqMessages,
