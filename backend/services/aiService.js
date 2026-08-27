@@ -105,7 +105,7 @@ Respond clearly and helpfully. Use markdown formatting when it improves readabil
 
     const response = await groq.chat.completions.create({
       messages: groqMessages,
-      model: process.env.GROQ_MODEL || 'llama-3.3-70b-versatile',
+      model: process.env.GROQ_MODEL || 'llama-3.1-8b-instant',
       temperature: 0.7,
     });
 
